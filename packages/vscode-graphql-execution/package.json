@@ -103,7 +103,7 @@
   },
   "dependencies": {
     "@graphql-tools/code-file-loader": "8.0.1",
-    "@urql/core": "2.6.1",
+    "@urql/core": "4.1.1",
     "@whatwg-node/fetch": "0.2.8",
     "capitalize": "2.0.4",
     "cosmiconfig": "8.2.0",
