@@ -13,8 +13,11 @@ import { createClient as createWSClient, OperationResult } from 'graphql-ws';
 import {
   CombinedError,
   createClient,
-  defaultExchanges,
+  cacheExchange,
+  fetchExchange,
   subscriptionExchange,
+  createRequest,
+  RequestExtensions,
 } from '@urql/core';
 
 import {
@@ -48,7 +51,7 @@ export class NetworkHelper {
     // it is similar to passing the nodejs env variable flag, except configured on a per-request basis here
     const agent = new Agent({ rejectUnauthorized });
 
-    const exchanges = [...defaultExchanges];
+    const exchanges = [cacheExchange, fetchExchange];
     if (operation === 'subscription') {
       const wsEndpointURL = endpoint.url.replace(/^http/, 'ws');
       const wsClient = createWSClient({
@@ -58,11 +61,15 @@ export class NetworkHelper {
       });
       exchanges.push(
         subscriptionExchange({
-          forwardSubscription: op => ({
-            subscribe: sink => ({
-              unsubscribe: wsClient.subscribe(op, sink),
-            }),
-          }),
+          forwardSubscription(request) {
+            const input = { ...request, query: request.query || '' };
+            return {
+              subscribe(sink) {
+                const unsubscribe = wsClient.subscribe(input, sink);
+                return { unsubscribe };
+              },
+            };
+          },
         }),
       );
     }
