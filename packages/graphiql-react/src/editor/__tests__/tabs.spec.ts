@@ -110,6 +110,7 @@ describe('getDefaultTabState', () => {
       getDefaultTabState({
         defaultQuery: '# Default',
         headers: null,
+        extensions: null,
         query: null,
         variables: null,
         storage: null,
@@ -125,19 +126,46 @@ describe('getDefaultTabState', () => {
     });
   });
 
+  it('returns default tab with extensions', () => {
+    const defaultExtensions = '{"timeout": 1000}';
+    expect(
+      getDefaultTabState({
+        defaultQuery: '# Default',
+        headers: null,
+        extensions: null,
+        defaultExtensions,
+        query: null,
+        variables: null,
+        storage: null,
+      }),
+    ).toEqual({
+      activeTabIndex: 0,
+      tabs: [
+        expect.objectContaining({
+          query: '# Default',
+          title: '<untitled>',
+          extensions: defaultExtensions,
+        }),
+      ],
+    });
+  });
+
   it('returns initial tabs', () => {
     expect(
       getDefaultTabState({
         defaultQuery: '# Default',
         headers: null,
+        extensions: null,
         defaultTabs: [
           {
             headers: null,
+            extensions: null,
             query: 'query Person { person { name } }',
             variables: '{"id":"foo"}',
           },
           {
             headers: '{"x-header":"foo"}',
+            extensions: '{"timeout": 2000}',
             query: 'query Image { image }',
             variables: null,
           },
@@ -153,9 +181,11 @@ describe('getDefaultTabState', () => {
           query: 'query Person { person { name } }',
           title: 'Person',
           variables: '{"id":"foo"}',
+          extensions: null,
         }),
         expect.objectContaining({
           headers: '{"x-header":"foo"}',
+          extensions: '{"timeout": 2000}',
           query: 'query Image { image }',
           title: 'Image',
         }),
@@ -191,5 +221,19 @@ describe('clearHeadersFromTabs', () => {
       ...stateWithoutHeaders,
       headers: null,
     });
+  });
+});
+
+describe('createTab with extensions', () => {
+  it('creates tab with extensions', () => {
+    const extensions = '{"timeout": 1000}';
+    expect(createTab({ query: 'query Foo {}', extensions })).toEqual(
+      expect.objectContaining({
+        id: expect.any(String),
+        hash: expect.any(String),
+        title: 'Foo',
+        extensions,
+      }),
+    );
   });
 });
