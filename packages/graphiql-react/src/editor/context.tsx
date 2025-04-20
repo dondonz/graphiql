@@ -11,6 +11,7 @@ import { ReactNode, useEffect, useRef, useState } from 'react';
 
 import { useStorageContext } from '../storage';
 import { createContextHook, createNullableContext } from '../utility/context';
+import { STORAGE_KEY as STORAGE_KEY_EXTENSIONS } from './extensions-editor';
 import { STORAGE_KEY as STORAGE_KEY_HEADERS } from './header-editor';
 import { useSynchronizeValue } from './hooks';
 import { STORAGE_KEY_QUERY } from './query-editor';
@@ -90,6 +91,10 @@ export type EditorContextType = TabsState & {
    */
   variableEditor: CodeMirrorEditor | null;
   /**
+   * The CodeMirror editor instance for the extensions editor.
+   */
+  extensionsEditor: CodeMirrorEditor | null;
+  /**
    * Set the CodeMirror editor instance for the headers editor.
    */
   setHeaderEditor(newEditor: CodeMirrorEditor): void;
@@ -105,6 +110,10 @@ export type EditorContextType = TabsState & {
    * Set the CodeMirror editor instance for the variables editor.
    */
   setVariableEditor(newEditor: CodeMirrorEditor): void;
+  /**
+   * Set the CodeMirror editor instance for the extensions editor.
+   */
+  setExtensionsEditor(newEditor: CodeMirrorEditor): void;
 
   /**
    * Changes the operation name and invokes the `onEditOperationName` callback.
@@ -131,6 +140,11 @@ export type EditorContextType = TabsState & {
    * component.
    */
   initialVariables: string;
+  /**
+   * The contents of the extensions editor when initially rendering the provider
+   * component.
+   */
+  initialExtensions: string;
 
   /**
    * A map of fragment definitions using the fragment name as key which are
@@ -252,6 +266,20 @@ export type EditorContextProviderProps = {
    * Headers to be set when opening a new tab
    */
   defaultHeaders?: string;
+
+  /**
+   * This prop can be used to set the contents of the extensions editor. Every
+   * time this prop changes, the contents of the extensions editor are replaced.
+   * Note that the editor contents can be changed in between these updates by
+   * typing in the editor.
+   */
+  extensions?: string;
+
+  /**
+   * This prop can be used to set the contents of the extensions editor when
+   * initially rendering the provider component.
+   */
+  defaultExtensions?: string;
 };
 
 export function EditorContextProvider(props: EditorContextProviderProps) {
@@ -267,6 +295,8 @@ export function EditorContextProvider(props: EditorContextProviderProps) {
   const [variableEditor, setVariableEditor] = useState<CodeMirrorEditor | null>(
     null,
   );
+  const [extensionsEditor, setExtensionsEditor] =
+    useState<CodeMirrorEditor | null>(null);
 
   const [shouldPersistHeaders, setShouldPersistHeadersInternal] = useState(
     () => {
@@ -281,6 +311,7 @@ export function EditorContextProvider(props: EditorContextProviderProps) {
   useSynchronizeValue(queryEditor, props.query);
   useSynchronizeValue(responseEditor, props.response);
   useSynchronizeValue(variableEditor, props.variables);
+  useSynchronizeValue(extensionsEditor, props.extensions);
 
   const storeTabs = useStoreTabs({
     storage,
@@ -294,15 +325,19 @@ export function EditorContextProvider(props: EditorContextProviderProps) {
     const variables =
       props.variables ?? storage?.get(STORAGE_KEY_VARIABLES) ?? null;
     const headers = props.headers ?? storage?.get(STORAGE_KEY_HEADERS) ?? null;
+    const extensions =
+      props.extensions ?? storage?.get(STORAGE_KEY_EXTENSIONS) ?? null;
     const response = props.response ?? '';
 
     const tabState = getDefaultTabState({
       query,
       variables,
       headers,
+      extensions,
       defaultTabs: props.defaultTabs,
       defaultQuery: props.defaultQuery || DEFAULT_QUERY,
       defaultHeaders: props.defaultHeaders,
+      defaultExtensions: props.defaultExtensions,
       storage,
       shouldPersistHeaders,
     });
@@ -315,6 +350,7 @@ export function EditorContextProvider(props: EditorContextProviderProps) {
         '',
       variables: variables ?? '',
       headers: headers ?? props.defaultHeaders ?? '',
+      extensions: extensions ?? props.defaultExtensions ?? '',
       response,
       tabState,
     };
@@ -350,14 +386,23 @@ export function EditorContextProvider(props: EditorContextProviderProps) {
     variableEditor,
     headerEditor,
     responseEditor,
+    extensionsEditor,
   });
-  const { onTabChange, defaultHeaders, defaultQuery, children } = props;
+  const {
+    onTabChange,
+    defaultHeaders,
+    defaultQuery,
+    defaultExtensions,
+    children,
+  } = props;
   const setEditorValues = useSetEditorValues({
     queryEditor,
     variableEditor,
     headerEditor,
     responseEditor,
+    extensionsEditor,
     defaultHeaders,
+    defaultExtensions,
   });
 
   const addTab: EditorContextType['addTab'] = () => {
@@ -477,10 +522,12 @@ export function EditorContextProvider(props: EditorContextProviderProps) {
     queryEditor,
     responseEditor,
     variableEditor,
+    extensionsEditor,
     setHeaderEditor,
     setQueryEditor,
     setResponseEditor,
     setVariableEditor,
+    setExtensionsEditor,
 
     setOperationName,
 
@@ -488,6 +535,7 @@ export function EditorContextProvider(props: EditorContextProviderProps) {
     initialVariables: initialState.variables,
     initialHeaders: initialState.headers,
     initialResponse: initialState.response,
+    initialExtensions: initialState.extensions,
 
     externalFragments,
     validationRules,

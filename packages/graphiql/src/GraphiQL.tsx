@@ -26,6 +26,7 @@ import {
   CopyIcon,
   Dialog,
   ExecuteButton,
+  ExtensionsEditor,
   GraphiQLProvider,
   GraphiQLProviderProps,
   HeaderEditor,
@@ -59,6 +60,7 @@ import {
   useTheme,
   UseVariableEditorArgs,
   VariableEditor,
+  UseExtensionsEditorArgs,
   WriteableEditorProps,
   isMacOs,
 } from '@graphiql/react';
@@ -129,6 +131,7 @@ export function GraphiQL({
   storage,
   validationRules,
   variables,
+  extensions,
   visiblePlugin,
   defaultHeaders,
   ...props
@@ -168,6 +171,7 @@ export function GraphiQL({
       storage={storage}
       validationRules={validationRules}
       variables={variables}
+      extensions={extensions}
     >
       <GraphiQLInterface
         confirmCloseTab={confirmCloseTab}
@@ -194,6 +198,7 @@ export type GraphiQLInterfaceProps = WriteableEditorProps &
   Pick<UseQueryEditorArgs, 'onCopyQuery'> &
   AddSuffix<Pick<UseVariableEditorArgs, 'onEdit'>, 'Variables'> &
   AddSuffix<Pick<UseHeaderEditorArgs, 'onEdit'>, 'Headers'> &
+  AddSuffix<Pick<UseExtensionsEditorArgs, 'onEdit'>, 'Extensions'> &
   Pick<UseResponseEditorArgs, 'responseTooltip'> & {
     children?: ReactNode;
     /**
@@ -202,15 +207,25 @@ export type GraphiQLInterfaceProps = WriteableEditorProps &
      * - `true` shows the editor tools
      * - `'variables'` specifically shows the variables editor
      * - `'headers'` specifically shows the headers editor
+     * - `'extensions'` specifically shows the extensions editor
      * By default the editor tools are initially shown when at least one of the
      * editors has contents.
      */
-    defaultEditorToolsVisibility?: boolean | 'variables' | 'headers';
+    defaultEditorToolsVisibility?:
+      | boolean
+      | 'variables'
+      | 'headers'
+      | 'extensions';
     /**
      * Toggle if the headers editor should be shown inside the editor tools.
      * @default true
      */
     isHeadersEditorEnabled?: boolean;
+    /**
+     * Toggle if the extensions editor should be shown inside the editor tools.
+     * @default true
+     */
+    isExtensionsEditorEnabled?: boolean;
     /**
      * An object that allows configuration of the toolbar next to the query
      * editor.
@@ -249,6 +264,7 @@ const TAB_CLASS_PREFIX = 'graphiql-session-tab-';
 
 export function GraphiQLInterface(props: GraphiQLInterfaceProps) {
   const isHeadersEditorEnabled = props.isHeadersEditorEnabled ?? true;
+  const isExtensionsEditorEnabled = props.isExtensionsEditorEnabled ?? true;
   const editorContext = useEditorContext({ nonNull: true });
   const executionContext = useExecutionContext({ nonNull: true });
   const schemaContext = useSchemaContext({ nonNull: true });
@@ -300,7 +316,8 @@ export function GraphiQLInterface(props: GraphiQLInterfaceProps) {
     initiallyHidden: (() => {
       if (
         props.defaultEditorToolsVisibility === 'variables' ||
-        props.defaultEditorToolsVisibility === 'headers'
+        props.defaultEditorToolsVisibility === 'headers' ||
+        props.defaultEditorToolsVisibility === 'extensions'
       ) {
         return;
       }
@@ -309,7 +326,9 @@ export function GraphiQLInterface(props: GraphiQLInterfaceProps) {
         return props.defaultEditorToolsVisibility ? undefined : 'second';
       }
 
-      return editorContext.initialVariables || editorContext.initialHeaders
+      return editorContext.initialVariables ||
+        editorContext.initialHeaders ||
+        editorContext.initialExtensions
         ? undefined
         : 'second';
     })(),
@@ -318,19 +337,26 @@ export function GraphiQLInterface(props: GraphiQLInterfaceProps) {
   });
 
   const [activeSecondaryEditor, setActiveSecondaryEditor] = useState<
-    'variables' | 'headers'
+    'variables' | 'headers' | 'extensions'
   >(() => {
     if (
       props.defaultEditorToolsVisibility === 'variables' ||
-      props.defaultEditorToolsVisibility === 'headers'
+      props.defaultEditorToolsVisibility === 'headers' ||
+      props.defaultEditorToolsVisibility === 'extensions'
     ) {
       return props.defaultEditorToolsVisibility;
     }
     return !editorContext.initialVariables &&
-      editorContext.initialHeaders &&
-      isHeadersEditorEnabled
-      ? 'headers'
-      : 'variables';
+      !editorContext.initialHeaders &&
+      !editorContext.initialExtensions &&
+      isHeadersEditorEnabled &&
+      isExtensionsEditorEnabled
+      ? 'extensions'
+      : !editorContext.initialVariables &&
+          editorContext.initialHeaders &&
+          isHeadersEditorEnabled
+        ? 'headers'
+        : 'variables';
   });
   const [showDialog, setShowDialog] = useState<
     'settings' | 'short-keys' | null
@@ -444,7 +470,10 @@ export function GraphiQLInterface(props: GraphiQLInterfaceProps) {
         editorToolsResize.setHiddenElement(null);
       }
       setActiveSecondaryEditor(
-        event.currentTarget.dataset.name as 'variables' | 'headers',
+        event.currentTarget.dataset.name as
+          | 'variables'
+          | 'headers'
+          | 'extensions',
       );
     },
     [editorToolsResize],
@@ -710,6 +739,21 @@ export function GraphiQLInterface(props: GraphiQLInterfaceProps) {
                           Headers
                         </UnStyledButton>
                       )}
+                      {isExtensionsEditorEnabled && (
+                        <UnStyledButton
+                          type="button"
+                          className={
+                            activeSecondaryEditor === 'extensions' &&
+                            editorToolsResize.hiddenElement !== 'second'
+                              ? 'active'
+                              : ''
+                          }
+                          onClick={handleToolsTabClick}
+                          data-name="extensions"
+                        >
+                          Extensions
+                        </UnStyledButton>
+                      )}
 
                       <Tooltip
                         label={
@@ -750,7 +794,9 @@ export function GraphiQLInterface(props: GraphiQLInterfaceProps) {
                       aria-label={
                         activeSecondaryEditor === 'variables'
                           ? 'Variables'
-                          : 'Headers'
+                          : activeSecondaryEditor === 'headers'
+                            ? 'Headers'
+                            : 'Extensions'
                       }
                     >
                       <VariableEditor
@@ -767,6 +813,15 @@ export function GraphiQLInterface(props: GraphiQLInterfaceProps) {
                           isHidden={activeSecondaryEditor !== 'headers'}
                           keyMap={props.keyMap}
                           onEdit={props.onEditHeaders}
+                          readOnly={props.readOnly}
+                        />
+                      )}
+                      {isExtensionsEditorEnabled && (
+                        <ExtensionsEditor
+                          editorTheme={props.editorTheme}
+                          isHidden={activeSecondaryEditor !== 'extensions'}
+                          keyMap={props.keyMap}
+                          onEdit={props.onEditExtensions}
                           readOnly={props.readOnly}
                         />
                       )}

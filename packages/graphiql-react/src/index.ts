@@ -18,12 +18,15 @@ export {
   useQueryEditor,
   useResponseEditor,
   useVariableEditor,
+  useExtensionsEditor,
   useEditorState,
   useOperationsEditorState,
   useOptimisticState,
   useVariablesEditorState,
   useHeadersEditorState,
+  useExtensionsEditorState,
   VariableEditor,
+  ExtensionsEditor,
 } from './editor';
 export {
   ExecutionContext,
@@ -90,6 +93,7 @@ export type {
   UseQueryEditorArgs,
   UseResponseEditorArgs,
   UseVariableEditorArgs,
+  UseExtensionsEditorArgs,
   WriteableEditorProps,
 } from './editor';
 export type {

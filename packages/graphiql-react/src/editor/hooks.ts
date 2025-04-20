@@ -42,7 +42,7 @@ export function useChangeHandler(
   editor: CodeMirrorEditor | null,
   callback: ((value: string) => void) | undefined,
   storageKey: string | null,
-  tabProperty: 'variables' | 'headers',
+  tabProperty: 'variables' | 'headers' | 'extensions',
   caller: Function,
 ) {
   const { updateActiveTabValues } = useEditorContext({ nonNull: true, caller });
@@ -222,10 +222,11 @@ type UsePrettifyEditorsArgs = {
 };
 
 export function usePrettifyEditors({ caller }: UsePrettifyEditorsArgs = {}) {
-  const { queryEditor, headerEditor, variableEditor } = useEditorContext({
-    nonNull: true,
-    caller: caller || _usePrettifyEditors,
-  });
+  const { queryEditor, headerEditor, variableEditor, extensionsEditor } =
+    useEditorContext({
+      nonNull: true,
+      caller: caller || _usePrettifyEditors,
+    });
   return () => {
     if (variableEditor) {
       const variableEditorContent = variableEditor.getValue();
@@ -254,6 +255,23 @@ export function usePrettifyEditors({ caller }: UsePrettifyEditorsArgs = {}) {
         );
         if (prettifiedHeaderEditorContent !== headerEditorContent) {
           headerEditor.setValue(prettifiedHeaderEditorContent);
+        }
+      } catch {
+        /* Parsing JSON failed, skip prettification */
+      }
+    }
+
+    if (extensionsEditor) {
+      const extensionsEditorContent = extensionsEditor.getValue();
+
+      try {
+        const prettifiedExtensionsEditorContent = JSON.stringify(
+          JSON.parse(extensionsEditorContent),
+          null,
+          2,
+        );
+        if (prettifiedExtensionsEditorContent !== extensionsEditorContent) {
+          extensionsEditor.setValue(prettifiedExtensionsEditorContent);
         }
       } catch {
         /* Parsing JSON failed, skip prettification */
@@ -345,7 +363,9 @@ export function useAutoCompleteLeafs({
 
 // https://react.dev/learn/you-might-not-need-an-effect
 
-export const useEditorState = (editor: 'query' | 'variable' | 'header') => {
+export const useEditorState = (
+  editor: 'query' | 'variable' | 'header' | 'extensions',
+) => {
   'use no memo'; // eslint-disable-line react-compiler/react-compiler -- TODO: check why query builder update only 1st field https://github.com/graphql/graphiql/issues/3836
   const context = useEditorContext({
     nonNull: true,
@@ -396,6 +416,16 @@ export const useHeadersEditorState = (): [
   setHeaders: (content: string) => void,
 ] => {
   return useEditorState('header');
+};
+
+/**
+ * useState-like hook for current tab extensions editor state
+ */
+export const useExtensionsEditorState = (): [
+  extensions: string,
+  setExtensions: (content: string) => void,
+] => {
+  return useEditorState('extensions');
 };
 
 /**

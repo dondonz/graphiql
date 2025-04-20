@@ -92,6 +92,7 @@ export function ExecutionContextProvider({
     queryEditor,
     responseEditor,
     variableEditor,
+    extensionsEditor,
     updateActiveTabValues,
   } = useEditorContext({ nonNull: true, caller: ExecutionContextProvider });
   const history = useHistoryContext();
@@ -159,6 +160,19 @@ export function ExecutionContextProvider({
       return;
     }
 
+    const extensionsString = extensionsEditor?.getValue();
+    let extensions: Record<string, unknown> | undefined;
+    try {
+      extensions = tryParseJsonObject({
+        json: extensionsString,
+        errorMessageParse: 'Extensions are invalid JSON',
+        errorMessageType: 'Extensions are not a JSON object.',
+      });
+    } catch (error) {
+      setResponse(error instanceof Error ? error.message : `${error}`);
+      return;
+    }
+
     if (externalFragments) {
       const fragmentDependencies = queryEditor.documentAST
         ? getFragmentDependenciesForAST(
@@ -184,6 +198,7 @@ export function ExecutionContextProvider({
       query,
       variables: variablesString,
       headers: headersString,
+      extensions: extensionsString,
       operationName: opName,
     });
     const _headers = headers ?? undefined;
@@ -226,6 +241,7 @@ export function ExecutionContextProvider({
           query,
           variables,
           operationName: opName,
+          extensions,
         },
         {
           headers: _headers,

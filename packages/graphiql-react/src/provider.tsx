@@ -25,6 +25,7 @@ export function GraphiQLProvider({
   dangerouslyAssumeSchemaIsValid,
   defaultQuery,
   defaultHeaders,
+  defaultExtensions,
   defaultTabs,
   externalFragments,
   fetcher,
@@ -47,6 +48,7 @@ export function GraphiQLProvider({
   storage,
   validationRules,
   variables,
+  extensions,
   visiblePlugin,
 }: GraphiQLProviderProps) {
   return (
@@ -55,6 +57,7 @@ export function GraphiQLProvider({
         <EditorContextProvider
           defaultQuery={defaultQuery}
           defaultHeaders={defaultHeaders}
+          defaultExtensions={defaultExtensions}
           defaultTabs={defaultTabs}
           externalFragments={externalFragments}
           headers={headers}
@@ -65,6 +68,7 @@ export function GraphiQLProvider({
           shouldPersistHeaders={shouldPersistHeaders}
           validationRules={validationRules}
           variables={variables}
+          extensions={extensions}
         >
           <SchemaContextProvider
             dangerouslyAssumeSchemaIsValid={dangerouslyAssumeSchemaIsValid}
