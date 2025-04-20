@@ -1,9 +1,15 @@
 import React from 'react';
-import clsx from 'clsx';
 import type { SchemaReference } from 'codemirror-graphql/utils/SchemaReference';
 
 import { useExtensionsEditor } from '../extensions-editor';
 import { CommonEditorProps } from '../types';
+
+import '../style/codemirror.css';
+import '../style/fold.css';
+import '../style/lint.css';
+import '../style/hint.css';
+import '../style/editor.css';
+import { clsx } from 'clsx';
 
 export type ExtensionsEditorProps = CommonEditorProps & {
   /**
@@ -49,11 +55,6 @@ export function ExtensionsEditor({
   });
 
   return (
-    <div
-      className={clsx('graphiql-editor', {
-        'graphiql-editor-hidden': isHidden,
-      })}
-      ref={ref}
-    />
+    <div className={clsx('graphiql-editor', isHidden && 'hidden')} ref={ref} />
   );
 }
