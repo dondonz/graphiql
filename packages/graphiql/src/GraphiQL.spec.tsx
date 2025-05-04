@@ -4,7 +4,13 @@
  *  This source code is licensed under the MIT license found in the
  *  LICENSE file in the root directory of this source tree.
  */
-import { act, render, waitFor, fireEvent } from '@testing-library/react';
+import {
+  act,
+  render,
+  waitFor,
+  fireEvent,
+  screen,
+} from '@testing-library/react';
 import React, { Component } from 'react';
 import { GraphiQL } from './GraphiQL';
 import { Fetcher } from '@graphiql/toolkit';
@@ -268,6 +274,113 @@ describe('GraphiQL', () => {
       });
     });
   }); // editor tools
+
+  describe('GraphiQL Extensions Editor', () => {
+    it('should display the Extensions tab and editor is available by default', async () => {
+      render(<GraphiQL fetcher={noOpFetcher} />);
+
+      // Find the button that activates the extensions editor
+      const extensionsButton = screen.getByRole('button', {
+        name: 'Extensions',
+      });
+      expect(extensionsButton).toBeInTheDocument();
+
+      // Activate the editor by clicking the button
+      fireEvent.click(extensionsButton);
+
+      // Find the editor pane itself
+      await waitFor(() => {
+        const extensionsEditorPane = screen.getByRole('region', {
+          name: 'Extensions',
+        });
+        expect(extensionsEditorPane).toBeInTheDocument();
+      });
+    });
+
+    it('should hide the Extensions tab and editor when isExtensionsEditorEnabled is false', () => {
+      render(
+        <GraphiQL fetcher={noOpFetcher} isExtensionsEditorEnabled={false} />,
+      );
+
+      const extensionsButton = screen.queryByRole('button', {
+        name: 'Extensions',
+      });
+      expect(extensionsButton).not.toBeInTheDocument();
+
+      // Also check that the editor pane itself is not rendered/found
+      const extensionsEditorPane = screen.queryByRole('region', {
+        name: 'Extensions',
+      });
+      expect(extensionsEditorPane).not.toBeInTheDocument();
+    });
+
+    it('should display initial extensions content', async () => {
+      const initialExtensions = '{ "token": "someValue" }';
+      const { container } = render(
+        <GraphiQL fetcher={noOpFetcher} extensions={initialExtensions} />,
+      );
+
+      // Activate the extensions editor
+      const extensionsButton = screen.getByRole('button', {
+        name: 'Extensions',
+      });
+      fireEvent.click(extensionsButton);
+
+      // Wait for the editor pane to be ready/visible
+      const extensionsEditorPane = await screen.findByRole('region', {
+        name: 'Extensions',
+      });
+      expect(extensionsEditorPane).toBeInTheDocument();
+
+      // Find the CodeMirror editor instance within the pane and check its content
+      await waitFor(() => {
+        // This selector targets the CodeMirror content area; adjust if necessary
+        const codeMirrorEditor = container.querySelector(
+          '.graphiql-editor-tool .cm-content',
+        );
+        expect(codeMirrorEditor).toBeInTheDocument();
+        // Use textContent and trim to avoid issues with extra whitespace
+        expect(codeMirrorEditor!.textContent?.trim()).toBe(initialExtensions);
+      });
+    });
+
+    it('should switch between Variables and Extensions editors', async () => {
+      render(<GraphiQL fetcher={noOpFetcher} />);
+
+      const variablesButton = screen.getByRole('button', { name: 'Variables' });
+      const extensionsButton = screen.getByRole('button', {
+        name: 'Extensions',
+      });
+
+      // Click Variables
+      fireEvent.click(variablesButton);
+
+      // Wait for Variables pane to be active
+      await waitFor(() => {
+        const variablesEditorPane = screen.getByRole('region', {
+          name: 'Variables',
+        });
+        expect(variablesEditorPane).toBeInTheDocument();
+        expect(
+          screen.queryByRole('region', { name: 'Extensions' }),
+        ).not.toBeVisible();
+      });
+
+      // Click Extensions
+      fireEvent.click(extensionsButton);
+
+      // Wait for Extensions pane to be active
+      await waitFor(() => {
+        const extensionsEditorPane = screen.getByRole('region', {
+          name: 'Extensions',
+        });
+        expect(extensionsEditorPane).toBeInTheDocument();
+        expect(
+          screen.queryByRole('region', { name: 'Variables' }),
+        ).not.toBeVisible();
+      });
+    });
+  });
 
   describe('panel resizing', () => {
     it('readjusts the query wrapper flex style field when the result panel is resized', async () => {
