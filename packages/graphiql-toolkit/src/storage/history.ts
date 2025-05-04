@@ -29,6 +29,7 @@ export class HistoryStore {
     query?: string,
     variables?: string,
     headers?: string,
+    extensions?: string,
     lastQuerySaved?: QueryStoreItem,
   ) {
     if (!query) {
@@ -48,23 +49,53 @@ export class HistoryStore {
     if (!lastQuerySaved) {
       return true;
     }
-    if (JSON.stringify(query) === JSON.stringify(lastQuerySaved.query)) {
-      if (
-        JSON.stringify(variables) === JSON.stringify(lastQuerySaved.variables)
-      ) {
-        if (
-          JSON.stringify(headers) === JSON.stringify(lastQuerySaved.headers)
-        ) {
-          return false;
-        }
-        if (headers && !lastQuerySaved.headers) {
-          return false;
-        }
-      }
-      if (variables && !lastQuerySaved.variables) {
-        return false;
-      }
+
+    // Check if all primary fields are identical
+    const queryMatch =
+      JSON.stringify(query) === JSON.stringify(lastQuerySaved.query);
+    const variablesMatch =
+      JSON.stringify(variables) === JSON.stringify(lastQuerySaved.variables);
+    const headersMatch =
+      JSON.stringify(headers) === JSON.stringify(lastQuerySaved.headers);
+    const extensionsMatch =
+      JSON.stringify(extensions) === JSON.stringify(lastQuerySaved.extensions);
+
+    if (queryMatch && variablesMatch && headersMatch && extensionsMatch) {
+      // Everything is identical, no need to save
+      return false;
     }
+
+    // Prevent saving if the only difference is a field being added for the first time
+    if (
+      queryMatch &&
+      variablesMatch &&
+      headersMatch &&
+      !extensionsMatch &&
+      extensions &&
+      !lastQuerySaved.extensions
+    ) {
+      return false;
+    }
+    if (
+      queryMatch &&
+      variablesMatch &&
+      !headersMatch &&
+      headers &&
+      !lastQuerySaved.headers
+    ) {
+      return false;
+    }
+    if (
+      queryMatch &&
+      !variablesMatch &&
+      variables &&
+      !lastQuerySaved.variables
+    ) {
+      return false;
+    }
+
+    // If we've reached here, there's a meaningful difference (query changed,
+    // or an existing field's value changed), so save the new entry.
     return true;
   }
 
@@ -72,6 +103,7 @@ export class HistoryStore {
     query,
     variables,
     headers,
+    extensions,
     operationName,
   }: QueryStoreItem) => {
     if (
@@ -79,6 +111,7 @@ export class HistoryStore {
         query,
         variables,
         headers,
+        extensions,
         this.history.fetchRecent(),
       )
     ) {
@@ -88,6 +121,7 @@ export class HistoryStore {
       query,
       variables,
       headers,
+      extensions,
       operationName,
     });
     const historyQueries = this.history.items;
@@ -99,6 +133,7 @@ export class HistoryStore {
     query,
     variables,
     headers,
+    extensions,
     operationName,
     label,
     favorite,
@@ -107,6 +142,7 @@ export class HistoryStore {
       query,
       variables,
       headers,
+      extensions,
       operationName,
       label,
     };
@@ -127,6 +163,7 @@ export class HistoryStore {
       query,
       variables,
       headers,
+      extensions,
       operationName,
       label,
       favorite,
@@ -137,6 +174,7 @@ export class HistoryStore {
       query,
       variables,
       headers,
+      extensions,
       operationName,
       label,
     };
@@ -149,7 +187,14 @@ export class HistoryStore {
   }
 
   deleteHistory = (
-    { query, variables, headers, operationName, favorite }: QueryStoreItem,
+    {
+      query,
+      variables,
+      headers,
+      extensions,
+      operationName,
+      favorite,
+    }: QueryStoreItem,
     clearFavorites = false,
   ) => {
     function deleteFromStore(store: QueryStore) {
@@ -158,6 +203,7 @@ export class HistoryStore {
           x.query === query &&
           x.variables === variables &&
           x.headers === headers &&
+          x.extensions === extensions &&
           x.operationName === operationName,
       );
       if (found) {
