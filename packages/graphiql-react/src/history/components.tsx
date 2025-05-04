@@ -106,10 +106,11 @@ export function HistoryItem(props: QueryHistoryItemProps) {
       nonNull: true,
       caller: HistoryItem,
     });
-  const { headerEditor, queryEditor, variableEditor } = useEditorContext({
-    nonNull: true,
-    caller: HistoryItem,
-  });
+  const { headerEditor, queryEditor, variableEditor, extensionsEditor } =
+    useEditorContext({
+      nonNull: true,
+      caller: HistoryItem,
+    });
   const inputRef = useRef<HTMLInputElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [isEditable, setIsEditable] = useState(false);
@@ -141,10 +142,11 @@ export function HistoryItem(props: QueryHistoryItemProps) {
   };
 
   const handleHistoryItemClick: MouseEventHandler<HTMLButtonElement> = () => {
-    const { query, variables, headers } = props.item;
+    const { query, variables, headers, extensions } = props.item;
     queryEditor?.setValue(query ?? '');
     variableEditor?.setValue(variables ?? '');
     headerEditor?.setValue(headers ?? '');
+    extensionsEditor?.setValue(extensions ?? '');
     setActive(props.item);
   };
 
