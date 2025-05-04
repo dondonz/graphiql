@@ -31,6 +31,12 @@ describe('Tabs', () => {
       .eq(1)
       .type('{"someHeader":"someValue"', { force: true });
 
+    // Enter extensions
+    cy.contains('Extensions').click();
+    cy.get('.graphiql-editor-tool textarea')
+      .eq(2) // Assuming Extensions is the third editor tool
+      .type('{"trace":true', { force: true });
+
     // Run the query
     cy.clickExecuteQuery();
 
@@ -46,6 +52,7 @@ describe('Tabs', () => {
       query: '{id}',
       variablesString: '',
       headersString: '',
+      extensionsString: '', // Expect empty extensions in first tab
       response: { data: { id: 'abc123' } },
     });
 
@@ -61,6 +68,7 @@ describe('Tabs', () => {
       query: 'query Foo {image}',
       variablesString: '{"someVar":42}',
       headersString: '{"someHeader":"someValue"}',
+      extensionsString: '{"trace":true}', // Expect extensions in second tab
       response: { data: { image: '/images/logo.svg' } },
     });
 
@@ -75,6 +83,7 @@ describe('Tabs', () => {
       query: '{id}',
       variablesString: '',
       headersString: '',
+      extensionsString: '', // Expect empty extensions after closing second tab
       response: { data: { id: 'abc123' } },
     });
   });

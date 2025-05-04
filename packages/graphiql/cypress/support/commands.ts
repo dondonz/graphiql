@@ -15,6 +15,7 @@ type Op = {
   variables?: Record<string, any>;
   variablesString?: string;
   headersString?: string;
+  extensionsString?: string;
   response?: Record<string, any>;
 };
 declare namespace Cypress {
@@ -73,7 +74,14 @@ Cypress.Commands.add('visitWithOp', ({ query, variables, variablesString }) => {
 
 Cypress.Commands.add(
   'assertHasValues',
-  ({ query, variables, variablesString, headersString, response }: Op) => {
+  ({
+    query,
+    variables,
+    variablesString,
+    headersString,
+    extensionsString,
+    response,
+  }: Op) => {
     cy.get('.graphiql-query-editor').should(element => {
       expect(normalize(element.get(0).innerText)).to.equal(
         codeWithLineNumbers(query),
@@ -106,6 +114,16 @@ Cypress.Commands.add(
         .should(element => {
           expect(normalize(element.get(0).innerText)).to.equal(
             codeWithLineNumbers(headersString),
+          );
+        });
+    }
+    if (extensionsString !== undefined) {
+      cy.contains('Extensions').click();
+      cy.get('.graphiql-editor-tool .graphiql-editor')
+        .eq(2)
+        .should(element => {
+          expect(normalize(element.get(0).innerText)).to.equal(
+            codeWithLineNumbers(extensionsString),
           );
         });
     }
