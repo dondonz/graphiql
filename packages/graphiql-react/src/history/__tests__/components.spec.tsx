@@ -12,12 +12,14 @@ vi.mock('../../editor', () => {
   const mockedSetQueryEditor = vi.fn();
   const mockedSetVariableEditor = vi.fn();
   const mockedSetHeaderEditor = vi.fn();
+  const mockedSetExtensionsEditor = vi.fn();
   return {
     useEditorContext() {
       return {
         queryEditor: { setValue: mockedSetQueryEditor },
         variableEditor: { setValue: mockedSetVariableEditor },
         headerEditor: { setValue: mockedSetHeaderEditor },
+        extensionsEditor: { setValue: mockedSetExtensionsEditor },
       };
     },
   };
@@ -34,6 +36,8 @@ const mockQuery = /* GraphQL */ `
 const mockVariables = JSON.stringify({ string: 'string' });
 
 const mockHeaders = JSON.stringify({ foo: 'bar' });
+
+const mockExtensions = JSON.stringify({ tracing: { enabled: true } });
 
 const mockOperationName = 'Test';
 
@@ -54,6 +58,7 @@ const baseMockProps: QueryHistoryItemProps = {
     query: mockQuery,
     variables: mockVariables,
     headers: mockHeaders,
+    extensions: mockExtensions,
     favorite: false,
   },
 };
@@ -75,10 +80,13 @@ describe('QueryHistoryItem', () => {
     .setValue as Mock;
   const mockedSetHeaderEditor = useEditorContext()!.headerEditor!
     .setValue as Mock;
+  const mockedSetExtensionsEditor = useEditorContext()!.extensionsEditor!
+    .setValue as Mock;
   beforeEach(() => {
     mockedSetQueryEditor.mockClear();
     mockedSetVariableEditor.mockClear();
     mockedSetHeaderEditor.mockClear();
+    mockedSetExtensionsEditor.mockClear();
   });
   it('renders operationName if label is not provided', () => {
     const otherMockProps = { item: { operationName: mockOperationName } };
@@ -117,6 +125,10 @@ describe('QueryHistoryItem', () => {
     );
     expect(mockedSetHeaderEditor).toHaveBeenCalledTimes(1);
     expect(mockedSetHeaderEditor).toHaveBeenCalledWith(mockProps.item.headers);
+    expect(mockedSetExtensionsEditor).toHaveBeenCalledTimes(1);
+    expect(mockedSetExtensionsEditor).toHaveBeenCalledWith(
+      mockProps.item.extensions,
+    );
   });
 
   it('renders label input if the edit label button is clicked', () => {
