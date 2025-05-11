@@ -1,7 +1,7 @@
 import { formatError } from '@graphiql/toolkit';
 import type { Position, Token } from 'codemirror';
-import { ComponentType, useEffect, useRef } from 'react';
-import ReactDOM from 'react-dom';
+import { ComponentType, useEffect, useRef, JSX } from 'react';
+import { createRoot } from 'react-dom/client';
 import { useSchemaContext } from '../schema';
 
 import {
@@ -28,8 +28,7 @@ export type ResponseTooltipType = ComponentType<{
 
 export type UseResponseEditorArgs = CommonEditorProps & {
   /**
-   * Customize the tooltip when hovering over properties in the response
-   * editor.
+   * Customize the tooltip when hovering over properties in the response editor.
    */
   responseTooltip?: ResponseTooltipType;
 };
@@ -52,6 +51,7 @@ function importCodeMirrorImports() {
     { useCommonAddons: false },
   );
 }
+
 // To make react-compiler happy, otherwise complains about - Hooks may not be referenced as normal values
 const _useResponseEditor = useResponseEditor;
 
@@ -83,6 +83,7 @@ export function useResponseEditor(
 
   useEffect(() => {
     let isActive = true;
+
     void importCodeMirrorImports().then(CodeMirror => {
       // Don't continue if the effect has already been cleaned up
       if (!isActive) {
@@ -90,35 +91,25 @@ export function useResponseEditor(
       }
 
       // Handle image tooltips and custom tooltips
-      const tooltipDiv = document.createElement('div');
+      const tooltipContainer = document.createElement('div');
+      const tooltipRoot = createRoot(tooltipContainer);
       CodeMirror.registerHelper(
         'info',
         'graphql-results',
         (token: Token, _options: any, _cm: CodeMirrorEditor, pos: Position) => {
-          const infoElements: JSX.Element[] = [];
+          const ResponseTooltip = responseTooltipRef.current;
+          const infoElements: JSX.Element[] = [
+            ResponseTooltip && <ResponseTooltip pos={pos} token={token} />,
+            ImagePreview.shouldRender(token) && (
+              <ImagePreview key="image-preview" token={token} />
+            ),
+          ].filter((v): v is JSX.Element => Boolean(v));
 
-          const ResponseTooltipComponent = responseTooltipRef.current;
-          if (ResponseTooltipComponent) {
-            infoElements.push(
-              <ResponseTooltipComponent pos={pos} token={token} />,
-            );
+          if (infoElements.length) {
+            tooltipRoot.render(infoElements);
+            return tooltipContainer;
           }
-
-          if (ImagePreview.shouldRender(token)) {
-            infoElements.push(
-              <ImagePreview key="image-preview" token={token} />,
-            );
-          }
-
-          // We can't refactor to root.unmount() from React 18 because we support React 16/17 too
-          if (!infoElements.length) {
-            // eslint-disable-next-line react/no-deprecated -- We still support React 16/17
-            ReactDOM.unmountComponentAtNode(tooltipDiv);
-            return null;
-          }
-          // eslint-disable-next-line react/no-deprecated -- We still support React 16/17
-          ReactDOM.render(infoElements, tooltipDiv);
-          return tooltipDiv;
+          tooltipRoot.unmount();
         },
       );
 
@@ -154,7 +145,7 @@ export function useResponseEditor(
     if (fetchError) {
       responseEditor?.setValue(fetchError);
     }
-    if (validationErrors.length > 0) {
+    if (validationErrors.length) {
       responseEditor?.setValue(formatError(validationErrors));
     }
   }, [responseEditor, fetchError, validationErrors]);

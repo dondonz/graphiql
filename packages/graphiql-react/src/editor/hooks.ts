@@ -1,16 +1,19 @@
-import { fillLeafs, GetDefaultFieldNamesFn, mergeAst } from '@graphiql/toolkit';
+import {
+  fillLeafs,
+  GetDefaultFieldNamesFn,
+  mergeAst,
+  MaybePromise,
+} from '@graphiql/toolkit';
 import type { EditorChange, EditorConfiguration } from 'codemirror';
 import type { SchemaReference } from 'codemirror-graphql/utils/SchemaReference';
 import copyToClipboard from 'copy-to-clipboard';
 import { parse, print } from 'graphql';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports -- TODO: check why query builder update only 1st field https://github.com/graphql/graphiql/issues/3836
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-
-import { useExplorerContext } from '../explorer';
 import { usePluginContext } from '../plugin';
 import { useSchemaContext } from '../schema';
 import { useStorageContext } from '../storage';
-import debounce from '../utility/debounce';
+import { debounce } from '../utility';
 import { onHasCompletion } from './completion';
 import { useEditorContext } from './context';
 import { CodeMirrorEditor } from './types';
@@ -32,9 +35,7 @@ export function useSynchronizeOption<K extends keyof EditorConfiguration>(
   value: EditorConfiguration[K],
 ) {
   useEffect(() => {
-    if (editor) {
-      editor.setOption(option, value);
-    }
+    editor?.setOption(option, value);
   }, [editor, option, value]);
 }
 
@@ -96,8 +97,7 @@ export function useCompletion(
   callback: ((reference: SchemaReference) => void) | null,
   caller: Function,
 ) {
-  const { schema } = useSchemaContext({ nonNull: true, caller });
-  const explorer = useExplorerContext();
+  const schemaContext = useSchemaContext({ nonNull: true, caller });
   const plugin = usePluginContext();
   useEffect(() => {
     if (!editor) {
@@ -108,8 +108,12 @@ export function useCompletion(
       instance: CodeMirrorEditor,
       changeObj?: EditorChange,
     ) => {
-      onHasCompletion(instance, changeObj, schema, explorer, plugin, type => {
-        callback?.({ kind: 'Type', type, schema: schema || undefined });
+      onHasCompletion(instance, changeObj, schemaContext, plugin, type => {
+        callback?.({
+          kind: 'Type',
+          type,
+          schema: schemaContext.schema || undefined,
+        });
       });
     };
     editor.on(
@@ -123,7 +127,7 @@ export function useCompletion(
         'hasCompletion',
         handleCompletion,
       );
-  }, [callback, editor, explorer, plugin, schema]);
+  }, [callback, editor, plugin, schemaContext]);
 }
 
 type EmptyCallback = () => void;
@@ -214,20 +218,36 @@ export function useMergeQuery({ caller }: UseMergeQueryArgs = {}) {
   };
 }
 
-type UsePrettifyEditorsArgs = {
+export type UsePrettifyEditorsArgs = {
   /**
    * This is only meant to be used internally in `@graphiql/react`.
    */
   caller?: Function;
+  /**
+   * Invoked when the prettify callback is invoked.
+   * @param query The current value of the query editor.
+   * @default
+   * import { parse, print } from 'graphql'
+   *
+   * (query) => print(parse(query))
+   * @returns The formatted query.
+   */
+  onPrettifyQuery?: (query: string) => MaybePromise<string>;
 };
 
-export function usePrettifyEditors({ caller }: UsePrettifyEditorsArgs = {}) {
-  const { queryEditor, headerEditor, variableEditor, extensionsEditor } =
-    useEditorContext({
-      nonNull: true,
-      caller: caller || _usePrettifyEditors,
-    });
-  return () => {
+function DEFAULT_PRETTIFY_QUERY(query: string): string {
+  return print(parse(query));
+}
+
+export function usePrettifyEditors({
+  caller,
+  onPrettifyQuery = DEFAULT_PRETTIFY_QUERY,
+}: UsePrettifyEditorsArgs = {}) {
+  const { queryEditor, headerEditor, variableEditor, extensionsEditor } = useEditorContext({
+    nonNull: true,
+    caller: caller || _usePrettifyEditors,
+  });
+  return async () => {
     if (variableEditor) {
       const variableEditorContent = variableEditor.getValue();
       try {
@@ -280,10 +300,13 @@ export function usePrettifyEditors({ caller }: UsePrettifyEditorsArgs = {}) {
 
     if (queryEditor) {
       const editorContent = queryEditor.getValue();
-      const prettifiedEditorContent = print(parse(editorContent));
-
-      if (prettifiedEditorContent !== editorContent) {
-        queryEditor.setValue(prettifiedEditorContent);
+      try {
+        const prettifiedEditorContent = await onPrettifyQuery(editorContent);
+        if (prettifiedEditorContent !== editorContent) {
+          queryEditor.setValue(prettifiedEditorContent);
+        }
+      } catch {
+        /* Parsing query failed, skip prettification */
       }
     }
   };
@@ -362,15 +385,10 @@ export function useAutoCompleteLeafs({
 }
 
 // https://react.dev/learn/you-might-not-need-an-effect
-
-export const useEditorState = (
-  editor: 'query' | 'variable' | 'header' | 'extensions',
-) => {
-  'use no memo'; // eslint-disable-line react-compiler/react-compiler -- TODO: check why query builder update only 1st field https://github.com/graphql/graphiql/issues/3836
-  const context = useEditorContext({
-    nonNull: true,
-  });
-
+export const useEditorState = (editor: 'query' | 'variable' | 'header' | 'extensions') => {
+  // eslint-disable-next-line react-hooks/react-compiler -- TODO: check why query builder update only 1st field https://github.com/graphql/graphiql/issues/3836
+  'use no memo';
+  const context = useEditorContext({ nonNull: true });
   const editorInstance = context[`${editor}Editor` as const];
   let valueString = '';
   const editorValue = editorInstance?.getValue() ?? false;
@@ -389,7 +407,7 @@ export const useEditorState = (
 };
 
 /**
- * useState-like hook for current tab operations editor state
+ * useState-like hook for the current tab operations editor state
  */
 export const useOperationsEditorState = (): [
   operations: string,
@@ -438,8 +456,7 @@ export const useExtensionsEditorState = (): [
  * calling them with great frequency (due to, for instance, mouse, keyboard, or
  * network events).
  *
- * Example:
- *
+ * @example
  * ```ts
  * const [operationsString, handleEditOperations] =
  *   useOptimisticState(useOperationsEditorState());

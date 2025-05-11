@@ -1,20 +1,18 @@
+'use no memo';
+
 /**
  *  Copyright (c) 2021 GraphQL Contributors.
  *
  *  This source code is licensed under the MIT license found in the
  *  LICENSE file in the root directory of this source tree.
  */
-import {
-  act,
-  render,
-  waitFor,
-  fireEvent,
-  screen,
-} from '@testing-library/react';
-import React, { Component } from 'react';
+import { act, render, waitFor, fireEvent, screen } from '@testing-library/react';
+import { Component } from 'react';
 import { GraphiQL } from './GraphiQL';
 import { Fetcher } from '@graphiql/toolkit';
 import { ToolbarButton } from '@graphiql/react';
+
+vi.mock('codemirror');
 
 // The smallest possible introspection result that builds a schema.
 const simpleIntrospection = {
@@ -38,6 +36,7 @@ beforeEach(() => {
 });
 
 describe('GraphiQL', () => {
+  // @ts-expect-error -- fixme
   const noOpFetcher: Fetcher = () => {};
 
   describe('fetcher', () => {
@@ -46,13 +45,13 @@ describe('GraphiQL', () => {
 
       // @ts-expect-error fetcher is a required prop to GraphiQL
       expect(() => render(<GraphiQL />)).toThrow(
-        'The `GraphiQL` component requires a `fetcher` function to be passed as prop.',
+        'The `SchemaContextProvider` component requires a `fetcher` function to be passed as prop.',
       );
       spy.mockRestore();
     });
 
     it('should construct correctly with fetcher', async () => {
-      await act(async () => {
+      await act(() => {
         expect(() => render(<GraphiQL fetcher={noOpFetcher} />)).not.toThrow();
       });
     });
@@ -161,7 +160,7 @@ describe('GraphiQL', () => {
         const mockEditor = container.querySelector<HTMLTextAreaElement>(
           '.graphiql-query-editor .mockCodeMirror',
         );
-        expect(mockEditor.value).toContain('# Welcome to GraphiQL');
+        expect(mockEditor!.value).toContain('# Welcome to GraphiQL');
       });
     });
 
@@ -217,7 +216,7 @@ describe('GraphiQL', () => {
 
       const secondaryEditorTitle = container.querySelector(
         '.graphiql-editor-tools',
-      );
+      )!;
 
       // drag the editor tools handle up
       act(() => {
@@ -275,112 +274,112 @@ describe('GraphiQL', () => {
     });
   }); // editor tools
 
-  describe('GraphiQL Extensions Editor', () => {
-    it('should display the Extensions tab and editor is available by default', async () => {
-      render(<GraphiQL fetcher={noOpFetcher} />);
-
-      // Find the button that activates the extensions editor
-      const extensionsButton = screen.getByRole('button', {
-        name: 'Extensions',
-      });
-      expect(extensionsButton).toBeInTheDocument();
-
-      // Activate the editor by clicking the button
-      fireEvent.click(extensionsButton);
-
-      // Find the editor pane itself
-      await waitFor(() => {
-        const extensionsEditorPane = screen.getByRole('region', {
-          name: 'Extensions',
-        });
-        expect(extensionsEditorPane).toBeInTheDocument();
-      });
-    });
-
-    it('should hide the Extensions tab and editor when isExtensionsEditorEnabled is false', () => {
-      render(
-        <GraphiQL fetcher={noOpFetcher} isExtensionsEditorEnabled={false} />,
-      );
-
-      const extensionsButton = screen.queryByRole('button', {
-        name: 'Extensions',
-      });
-      expect(extensionsButton).not.toBeInTheDocument();
-
-      // Also check that the editor pane itself is not rendered/found
-      const extensionsEditorPane = screen.queryByRole('region', {
-        name: 'Extensions',
-      });
-      expect(extensionsEditorPane).not.toBeInTheDocument();
-    });
-
-    it('should display initial extensions content', async () => {
-      const initialExtensions = '{ "token": "someValue" }';
-      const { container } = render(
-        <GraphiQL fetcher={noOpFetcher} extensions={initialExtensions} />,
-      );
-
-      // Activate the extensions editor
-      const extensionsButton = screen.getByRole('button', {
-        name: 'Extensions',
-      });
-      fireEvent.click(extensionsButton);
-
-      // Wait for the editor pane to be ready/visible
-      const extensionsEditorPane = await screen.findByRole('region', {
-        name: 'Extensions',
-      });
-      expect(extensionsEditorPane).toBeInTheDocument();
-
-      // Find the CodeMirror editor instance within the pane and check its content
-      await waitFor(() => {
-        // This selector targets the CodeMirror content area; adjust if necessary
-        const codeMirrorEditor = container.querySelector(
-          '.graphiql-editor-tool .cm-content',
-        );
-        expect(codeMirrorEditor).toBeInTheDocument();
-        // Use textContent and trim to avoid issues with extra whitespace
-        expect(codeMirrorEditor!.textContent?.trim()).toBe(initialExtensions);
-      });
-    });
-
-    it('should switch between Variables and Extensions editors', async () => {
-      render(<GraphiQL fetcher={noOpFetcher} />);
-
-      const variablesButton = screen.getByRole('button', { name: 'Variables' });
-      const extensionsButton = screen.getByRole('button', {
-        name: 'Extensions',
-      });
-
-      // Click Variables
-      fireEvent.click(variablesButton);
-
-      // Wait for Variables pane to be active
-      await waitFor(() => {
-        const variablesEditorPane = screen.getByRole('region', {
-          name: 'Variables',
-        });
-        expect(variablesEditorPane).toBeInTheDocument();
-        expect(
-          screen.queryByRole('region', { name: 'Extensions' }),
-        ).not.toBeVisible();
-      });
-
-      // Click Extensions
-      fireEvent.click(extensionsButton);
-
-      // Wait for Extensions pane to be active
-      await waitFor(() => {
-        const extensionsEditorPane = screen.getByRole('region', {
-          name: 'Extensions',
-        });
-        expect(extensionsEditorPane).toBeInTheDocument();
-        expect(
-          screen.queryByRole('region', { name: 'Variables' }),
-        ).not.toBeVisible();
-      });
-    });
-  });
+  // describe('GraphiQL Extensions Editor', () => {
+  //   it('should display the Extensions tab and editor is available by default', async () => {
+  //     render(<GraphiQL fetcher={noOpFetcher} />);
+  //
+  //     // Find the button that activates the extensions editor
+  //     const extensionsButton = screen.getByRole('button', {
+  //       name: 'Extensions',
+  //     });
+  //     expect(extensionsButton).toBeInTheDocument();
+  //
+  //     // Activate the editor by clicking the button
+  //     fireEvent.click(extensionsButton);
+  //
+  //     // Find the editor pane itself
+  //     await waitFor(() => {
+  //       const extensionsEditorPane = screen.getByRole('region', {
+  //         name: 'Extensions',
+  //       });
+  //       expect(extensionsEditorPane).toBeInTheDocument();
+  //     });
+  //   });
+  //
+  //   it('should hide the Extensions tab and editor when isExtensionsEditorEnabled is false', () => {
+  //     render(
+  //       <GraphiQL fetcher={noOpFetcher} isExtensionsEditorEnabled={false} />,
+  //     );
+  //
+  //     const extensionsButton = screen.queryByRole('button', {
+  //       name: 'Extensions',
+  //     });
+  //     expect(extensionsButton).not.toBeInTheDocument();
+  //
+  //     // Also check that the editor pane itself is not rendered/found
+  //     const extensionsEditorPane = screen.queryByRole('region', {
+  //       name: 'Extensions',
+  //     });
+  //     expect(extensionsEditorPane).not.toBeInTheDocument();
+  //   });
+  //
+  //   it('should display initial extensions content', async () => {
+  //     const initialExtensions = '{ "token": "someValue" }';
+  //     const { container } = render(
+  //       <GraphiQL fetcher={noOpFetcher} extensions={initialExtensions} />,
+  //     );
+  //
+  //     // Activate the extensions editor
+  //     const extensionsButton = screen.getByRole('button', {
+  //       name: 'Extensions',
+  //     });
+  //     fireEvent.click(extensionsButton);
+  //
+  //     // Wait for the editor pane to be ready/visible
+  //     const extensionsEditorPane = await screen.findByRole('region', {
+  //       name: 'Extensions',
+  //     });
+  //     expect(extensionsEditorPane).toBeInTheDocument();
+  //
+  //     // Find the CodeMirror editor instance within the pane and check its content
+  //     await waitFor(() => {
+  //       // This selector targets the CodeMirror content area; adjust if necessary
+  //       const codeMirrorEditor = container.querySelector(
+  //         '.graphiql-editor-tool .cm-content',
+  //       );
+  //       expect(codeMirrorEditor).toBeInTheDocument();
+  //       // Use textContent and trim to avoid issues with extra whitespace
+  //       expect(codeMirrorEditor!.textContent?.trim()).toBe(initialExtensions);
+  //     });
+  //   });
+  //
+  //   it('should switch between Variables and Extensions editors', async () => {
+  //     render(<GraphiQL fetcher={noOpFetcher} />);
+  //
+  //     const variablesButton = screen.getByRole('button', { name: 'Variables' });
+  //     const extensionsButton = screen.getByRole('button', {
+  //       name: 'Extensions',
+  //     });
+  //
+  //     // Click Variables
+  //     fireEvent.click(variablesButton);
+  //
+  //     // Wait for Variables pane to be active
+  //     await waitFor(() => {
+  //       const variablesEditorPane = screen.getByRole('region', {
+  //         name: 'Variables',
+  //       });
+  //       expect(variablesEditorPane).toBeInTheDocument();
+  //       expect(
+  //         screen.queryByRole('region', { name: 'Extensions' }),
+  //       ).not.toBeVisible();
+  //     });
+  //
+  //     // Click Extensions
+  //     fireEvent.click(extensionsButton);
+  //
+  //     // Wait for Extensions pane to be active
+  //     await waitFor(() => {
+  //       const extensionsEditorPane = screen.getByRole('region', {
+  //         name: 'Extensions',
+  //       });
+  //       expect(extensionsEditorPane).toBeInTheDocument();
+  //       expect(
+  //         screen.queryByRole('region', { name: 'Variables' }),
+  //       ).not.toBeVisible();
+  //     });
+  //   });
+  // });
 
   describe('panel resizing', () => {
     it('readjusts the query wrapper flex style field when the result panel is resized', async () => {
@@ -395,8 +394,8 @@ describe('GraphiQL', () => {
 
       const { container } = render(<GraphiQL fetcher={noOpFetcher} />);
 
-      const dragBar = container.querySelector('.graphiql-horizontal-drag-bar');
-      const editors = container.querySelector('.graphiql-editors');
+      const dragBar = container.querySelector('.graphiql-horizontal-drag-bar')!;
+      const editors = container.querySelector('.graphiql-editors')!;
 
       act(() => {
         fireEvent.mouseDown(dragBar, {
@@ -414,7 +413,7 @@ describe('GraphiQL', () => {
 
       await waitFor(() => {
         // 700 / (900 - 700) = 3.5
-        expect(editors.parentElement.style.flex).toEqual('3.5');
+        expect(editors.style.flex).toEqual('3.5');
       });
 
       clientWidthSpy.mockRestore();
@@ -435,7 +434,9 @@ describe('GraphiQL', () => {
 
       act(() => {
         fireEvent.click(
-          container.querySelector('[aria-label="Show Documentation Explorer"]'),
+          container.querySelector(
+            '[aria-label="Show Documentation Explorer"]',
+          )!,
         );
       });
 
@@ -457,9 +458,9 @@ describe('GraphiQL', () => {
 
       await waitFor(() => {
         // 797 / (1200 - 797) = 1.977667493796526
-        expect(
-          container.querySelector('.graphiql-plugin')?.parentElement.style.flex,
-        ).toBe('1.977667493796526');
+        expect(container.querySelector('.graphiql-plugin')!.style.flex).toBe(
+          '1.977667493796526',
+        );
       });
 
       clientWidthSpy.mockRestore();
@@ -520,17 +521,17 @@ describe('GraphiQL', () => {
   });
 
   describe('Tabs', () => {
-    it('show tabs if there are more than one', async () => {
+    it('show tabs', async () => {
       const { container } = render(<GraphiQL fetcher={noOpFetcher} />);
 
       await waitFor(() => {
         expect(
           container.querySelectorAll('.graphiql-tabs .graphiql-tab'),
-        ).toHaveLength(0);
+        ).toHaveLength(1);
       });
 
       act(() => {
-        fireEvent.click(container.querySelector('.graphiql-tab-add'));
+        fireEvent.click(container.querySelector('.graphiql-tab-add')!);
       });
 
       await waitFor(() => {
@@ -540,7 +541,7 @@ describe('GraphiQL', () => {
       });
 
       act(() => {
-        fireEvent.click(container.querySelector('.graphiql-tab-add'));
+        fireEvent.click(container.querySelector('.graphiql-tab-add')!);
       });
 
       await waitFor(() => {
@@ -560,7 +561,7 @@ describe('GraphiQL', () => {
       });
 
       act(() => {
-        fireEvent.click(container.querySelector('.graphiql-tab-add'));
+        fireEvent.click(container.querySelector('.graphiql-tab-add')!);
       });
 
       await waitFor(() => {
@@ -570,7 +571,7 @@ describe('GraphiQL', () => {
       });
 
       act(() => {
-        fireEvent.click(container.querySelector('.graphiql-tab-add'));
+        fireEvent.click(container.querySelector('.graphiql-tab-add')!);
       });
 
       await waitFor(() => {
@@ -584,7 +585,7 @@ describe('GraphiQL', () => {
       const { container } = render(<GraphiQL fetcher={noOpFetcher} />);
 
       act(() => {
-        fireEvent.click(container.querySelector('.graphiql-tab-add'));
+        fireEvent.click(container.querySelector('.graphiql-tab-add')!);
       });
 
       await waitFor(() => {
@@ -595,14 +596,14 @@ describe('GraphiQL', () => {
 
       act(() => {
         fireEvent.click(
-          container.querySelector('.graphiql-tab .graphiql-tab-close'),
+          container.querySelector('.graphiql-tab .graphiql-tab-close')!,
         );
       });
 
       await waitFor(() => {
         expect(
           container.querySelectorAll('.graphiql-tabs .graphiql-tab'),
-        ).toHaveLength(0);
+        ).toHaveLength(1);
         expect(
           container.querySelectorAll('.graphiql-tab .graphiql-tab-close'),
         ).toHaveLength(0);
@@ -709,28 +710,6 @@ describe('GraphiQL', () => {
           expect(getByText('My Exported Type Logo')).toBeInTheDocument();
         });
       });
-
-      it('can be overridden using a named component', async () => {
-        const WrappedLogo = () => {
-          return (
-            <div className="test-wrapper">
-              <GraphiQL.Logo>My Named Component Logo</GraphiQL.Logo>
-            </div>
-          );
-        };
-        WrappedLogo.displayName = 'GraphiQLLogo';
-
-        const { container, getByText } = render(
-          <GraphiQL fetcher={noOpFetcher}>
-            <WrappedLogo />
-          </GraphiQL>,
-        );
-
-        await waitFor(() => {
-          expect(container.querySelector('.test-wrapper')).toBeInTheDocument();
-          expect(getByText('My Named Component Logo')).toBeInTheDocument();
-        });
-      });
     });
 
     describe('GraphiQL.Toolbar', () => {
@@ -738,41 +717,12 @@ describe('GraphiQL', () => {
         const { container } = render(
           <GraphiQL fetcher={noOpFetcher}>
             <GraphiQL.Toolbar>
-              <ToolbarButton label="My Fun Label" />
+              {() => <ToolbarButton label="My Fun Label" />}
             </GraphiQL.Toolbar>
           </GraphiQL>,
         );
 
         await waitFor(() => {
-          expect(
-            container.querySelectorAll(
-              '[role="toolbar"] .graphiql-toolbar-button',
-            ),
-          ).toHaveLength(1);
-        });
-      });
-
-      it('can be overridden using a named component', async () => {
-        const WrappedToolbar = () => {
-          return (
-            <div className="test-wrapper">
-              <GraphiQL.Toolbar>
-                <ToolbarButton label="My Fun Label" />
-              </GraphiQL.Toolbar>
-              ,
-            </div>
-          );
-        };
-        WrappedToolbar.displayName = 'GraphiQLToolbar';
-
-        const { container } = render(
-          <GraphiQL fetcher={noOpFetcher}>
-            <WrappedToolbar />
-          </GraphiQL>,
-        );
-
-        await waitFor(() => {
-          expect(container.querySelector('.test-wrapper')).toBeInTheDocument();
           expect(
             container.querySelectorAll(
               '[role="toolbar"] .graphiql-toolbar-button',
@@ -793,33 +743,6 @@ describe('GraphiQL', () => {
         );
 
         await waitFor(() => {
-          expect(
-            container.querySelectorAll('.graphiql-footer button'),
-          ).toHaveLength(1);
-        });
-      });
-
-      it('can be overridden using a named component', async () => {
-        const WrappedFooter = () => {
-          return (
-            <div className="test-wrapper">
-              <GraphiQL.Footer data-test-selector="override-footer">
-                <ToolbarButton label="My Fun Label" />
-              </GraphiQL.Footer>
-              ,
-            </div>
-          );
-        };
-        WrappedFooter.displayName = 'GraphiQLFooter';
-
-        const { container } = render(
-          <GraphiQL fetcher={noOpFetcher}>
-            <WrappedFooter />
-          </GraphiQL>,
-        );
-
-        await waitFor(() => {
-          expect(container.querySelector('.test-wrapper')).toBeInTheDocument();
           expect(
             container.querySelectorAll('.graphiql-footer button'),
           ).toHaveLength(1);

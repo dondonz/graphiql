@@ -1,5 +1,26 @@
 # graphql-language-service-server
 
+## 2.14.5
+
+### Patch Changes
+
+- [#3933](https://github.com/graphql/graphiql/pull/3933) [`38fdcdb`](https://github.com/graphql/graphiql/commit/38fdcdbc4bab5451638f56eae5a19062632afe93) Thanks [@dimaMachina](https://github.com/dimaMachina)! - remove unnecessary string conversion in `logger.info(String(error))`
+
+## 2.14.4
+
+### Patch Changes
+
+- [#3913](https://github.com/graphql/graphiql/pull/3913) [`3b5c309`](https://github.com/graphql/graphiql/commit/3b5c309e71b381311a6e928db089f4fa48530b35) Thanks [@joshbode](https://github.com/joshbode)! - return `null` instead of an empty `contents` array when hover results are empty
+
+## 2.14.3
+
+### Patch Changes
+
+- [#3896](https://github.com/graphql/graphiql/pull/3896) [`1adc40c`](https://github.com/graphql/graphiql/commit/1adc40cc56dbf79296bb857156e6adce1c44dcbe) Thanks [@dimaMachina](https://github.com/dimaMachina)! - bump eslint, eslint-plugins and fix new warnings
+
+- Updated dependencies [[`1adc40c`](https://github.com/graphql/graphiql/commit/1adc40cc56dbf79296bb857156e6adce1c44dcbe)]:
+  - graphql-language-service@5.3.1
+
 ## 2.14.2
 
 ### Patch Changes

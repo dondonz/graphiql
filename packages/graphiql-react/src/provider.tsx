@@ -1,26 +1,19 @@
-import { EditorContextProvider, EditorContextProviderProps } from './editor';
-import {
-  ExecutionContextProvider,
-  ExecutionContextProviderProps,
-} from './execution';
-import {
-  ExplorerContextProvider,
-  ExplorerContextProviderProps,
-} from './explorer/context';
-import { HistoryContextProvider, HistoryContextProviderProps } from './history';
-import { PluginContextProvider, PluginContextProviderProps } from './plugin';
-import { SchemaContextProvider, SchemaContextProviderProps } from './schema';
-import { StorageContextProvider, StorageContextProviderProps } from './storage';
+import type { ComponentPropsWithoutRef, FC } from 'react';
+import { EditorContextProvider } from './editor';
+import { ExecutionContextProvider } from './execution';
+import { PluginContextProvider } from './plugin';
+import { SchemaContextProvider } from './schema';
+import { StorageContextProvider } from './storage';
 
-export type GraphiQLProviderProps = EditorContextProviderProps &
-  ExecutionContextProviderProps &
-  ExplorerContextProviderProps &
-  HistoryContextProviderProps &
-  PluginContextProviderProps &
-  SchemaContextProviderProps &
-  StorageContextProviderProps;
+type GraphiQLProviderProps =
+  //
+  ComponentPropsWithoutRef<typeof EditorContextProvider> &
+    ComponentPropsWithoutRef<typeof ExecutionContextProvider> &
+    ComponentPropsWithoutRef<typeof PluginContextProvider> &
+    ComponentPropsWithoutRef<typeof SchemaContextProvider> &
+    ComponentPropsWithoutRef<typeof StorageContextProvider>;
 
-export function GraphiQLProvider({
+export const GraphiQLProvider: FC<GraphiQLProviderProps> = ({
   children,
   dangerouslyAssumeSchemaIsValid,
   defaultQuery,
@@ -33,13 +26,13 @@ export function GraphiQLProvider({
   headers,
   inputValueDeprecation,
   introspectionQueryName,
-  maxHistoryLength,
   onEditOperationName,
   onSchemaChange,
   onTabChange,
   onTogglePluginVisibility,
   operationName,
   plugins,
+  referencePlugin,
   query,
   response,
   schema,
@@ -50,53 +43,54 @@ export function GraphiQLProvider({
   variables,
   extensions,
   visiblePlugin,
-}: GraphiQLProviderProps) {
+}) => {
+  const editorContextProps = {
+    defaultQuery,
+    defaultHeaders,
+    defaultExtensions,
+    defaultTabs,
+    externalFragments,
+    headers,
+    onEditOperationName,
+    onTabChange,
+    query,
+    response,
+    shouldPersistHeaders,
+    validationRules,
+    variables,
+    extensions,
+  };
+  const schemaContextProps = {
+    dangerouslyAssumeSchemaIsValid,
+    fetcher,
+    inputValueDeprecation,
+    introspectionQueryName,
+    onSchemaChange,
+    schema,
+    schemaDescription,
+  };
+  const executionContextProps = {
+    getDefaultFieldNames,
+    fetcher,
+    operationName,
+  };
+  const pluginContextProps = {
+    onTogglePluginVisibility,
+    plugins,
+    visiblePlugin,
+    referencePlugin,
+  };
   return (
     <StorageContextProvider storage={storage}>
-      <HistoryContextProvider maxHistoryLength={maxHistoryLength}>
-        <EditorContextProvider
-          defaultQuery={defaultQuery}
-          defaultHeaders={defaultHeaders}
-          defaultExtensions={defaultExtensions}
-          defaultTabs={defaultTabs}
-          externalFragments={externalFragments}
-          headers={headers}
-          onEditOperationName={onEditOperationName}
-          onTabChange={onTabChange}
-          query={query}
-          response={response}
-          shouldPersistHeaders={shouldPersistHeaders}
-          validationRules={validationRules}
-          variables={variables}
-          extensions={extensions}
-        >
-          <SchemaContextProvider
-            dangerouslyAssumeSchemaIsValid={dangerouslyAssumeSchemaIsValid}
-            fetcher={fetcher}
-            inputValueDeprecation={inputValueDeprecation}
-            introspectionQueryName={introspectionQueryName}
-            onSchemaChange={onSchemaChange}
-            schema={schema}
-            schemaDescription={schemaDescription}
-          >
-            <ExecutionContextProvider
-              getDefaultFieldNames={getDefaultFieldNames}
-              fetcher={fetcher}
-              operationName={operationName}
-            >
-              <ExplorerContextProvider>
-                <PluginContextProvider
-                  onTogglePluginVisibility={onTogglePluginVisibility}
-                  plugins={plugins}
-                  visiblePlugin={visiblePlugin}
-                >
-                  {children}
-                </PluginContextProvider>
-              </ExplorerContextProvider>
-            </ExecutionContextProvider>
-          </SchemaContextProvider>
-        </EditorContextProvider>
-      </HistoryContextProvider>
+      <EditorContextProvider {...editorContextProps}>
+        <SchemaContextProvider {...schemaContextProps}>
+          <ExecutionContextProvider {...executionContextProps}>
+            <PluginContextProvider {...pluginContextProps}>
+              {children}
+            </PluginContextProvider>
+          </ExecutionContextProvider>
+        </SchemaContextProvider>
+      </EditorContextProvider>
     </StorageContextProvider>
   );
-}
+};

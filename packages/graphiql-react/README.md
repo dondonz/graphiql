@@ -61,7 +61,7 @@ function MyGraphQLIDE() {
 ```
 
 The package also ships the necessary CSS that all its UI components need. You
-can import them from `@graphiql/react/dist/style.css`.
+can import them from `@graphiql/react/style.css`.
 
 > **Note**: In order for these styles to apply, the UI components need to be
 > rendered inside an element that has a class name `graphiql-container`.
@@ -130,6 +130,6 @@ elements background.
 If you want to develop with `@graphiql/react` locally - in particular when
 working on the `graphiql` package - all you need to do is run `yarn dev` in the
 package folder in a separate terminal. This will build the package using Vite.
-When using it in combination with `yarn dev-graphiql` (running in the repo
+When using it in combination with `yarn dev:graphiql` (running in the repo
 root) this will give you auto-reloading when working on `graphiql` and
 `@graphiql/react` simultaneously.

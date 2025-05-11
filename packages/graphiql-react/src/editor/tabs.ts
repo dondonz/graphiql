@@ -4,7 +4,7 @@ import { StorageAPI } from '@graphiql/toolkit';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports -- fixme
 import { useCallback, useMemo } from 'react';
 
-import debounce from '../utility/debounce';
+import { debounce } from '../utility/debounce';
 import { CodeMirrorEditorWithOperationFacts } from './context';
 import { CodeMirrorEditor } from './types';
 
@@ -334,15 +334,16 @@ export function createTab({
   headers = null,
   extensions = null,
 }: Partial<TabDefinition> = {}): TabState {
+  const operationName = query ? fuzzyExtractOperationName(query) : null;
   return {
     id: guid(),
     hash: hashFromTabContents({ query, variables, headers }),
-    title: (query && fuzzyExtractOperationName(query)) || DEFAULT_TITLE,
+    title: operationName || DEFAULT_TITLE,
     query,
     variables,
     headers,
     extensions,
-    operationName: null,
+    operationName,
     response: null,
   };
 }

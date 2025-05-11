@@ -1,5 +1,452 @@
 # Change Log
 
+## 4.0.3
+
+### Patch Changes
+
+- [#3938](https://github.com/graphql/graphiql/pull/3938) [`9f55d93`](https://github.com/graphql/graphiql/commit/9f55d930c8a63b1683740cc7e51531fe09059b72) Thanks [@dimaMachina](https://github.com/dimaMachina)! - fix unable override `referencePlugin` prop
+
+- [#3936](https://github.com/graphql/graphiql/pull/3936) [`2bfbb06`](https://github.com/graphql/graphiql/commit/2bfbb06e416cabc46951a137b61a12a571f0c937) Thanks [@dimaMachina](https://github.com/dimaMachina)! - add scroll-x to graphiql tabs area
+
+- [#3939](https://github.com/graphql/graphiql/pull/3939) [`69ad489`](https://github.com/graphql/graphiql/commit/69ad489678d0096432d5c4b1749d87343f4ed1f7) Thanks [@dimaMachina](https://github.com/dimaMachina)! - prefer `React.FC` type when declaring React components
+
+- [#3937](https://github.com/graphql/graphiql/pull/3937) [`2500288`](https://github.com/graphql/graphiql/commit/250028863f6eefe4167ff9f9c23168ccf0a85b7b) Thanks [@dimaMachina](https://github.com/dimaMachina)! - remove `Warning: useLayoutEffect does nothing on the server, because its effect cannot be encoded into the server renderer's output format` warnings on SSR
+
+- [#3935](https://github.com/graphql/graphiql/pull/3935) [`5985e13`](https://github.com/graphql/graphiql/commit/5985e135fcc38a0ce90bf5a5d2cc344ec6b36aab) Thanks [@dimaMachina](https://github.com/dimaMachina)! - feat(@graphiql/plugin-history): migrate React context to zustand, replace `useHistoryContext` with `useHistory`, `useHistoryActions` hooks
+
+- Updated dependencies [[`2bfbb06`](https://github.com/graphql/graphiql/commit/2bfbb06e416cabc46951a137b61a12a571f0c937), [`69ad489`](https://github.com/graphql/graphiql/commit/69ad489678d0096432d5c4b1749d87343f4ed1f7), [`2500288`](https://github.com/graphql/graphiql/commit/250028863f6eefe4167ff9f9c23168ccf0a85b7b), [`5985e13`](https://github.com/graphql/graphiql/commit/5985e135fcc38a0ce90bf5a5d2cc344ec6b36aab)]:
+  - @graphiql/react@0.32.2
+  - @graphiql/plugin-doc-explorer@0.0.2
+  - @graphiql/plugin-history@0.1.0
+
+## 4.0.2
+
+### Patch Changes
+
+- [#3916](https://github.com/graphql/graphiql/pull/3916) [`98d13a3`](https://github.com/graphql/graphiql/commit/98d13a3e515eb70aaf5a5ba669c680d5959fef67) Thanks [@dimaMachina](https://github.com/dimaMachina)! - - remove the following exports from `@graphiql/react` and move them in `@graphiql/plugin-doc-explorer` package:
+
+  - Argument
+  - DefaultValue
+  - DeprecationReason
+  - Directive
+  - DocExplorer
+  - ExplorerContext
+  - ExplorerContextProvider
+  - ExplorerSection
+  - FieldDocumentation
+  - FieldLink
+  - SchemaDocumentation
+  - Search
+  - TypeDocumentation
+  - TypeLink
+  - useExplorerContext
+  - DOC_EXPLORER_PLUGIN
+  - ExplorerContextType
+  - ExplorerFieldDef
+  - ExplorerNavStack
+  - ExplorerNavStackItem
+  - add new `referencePlugin` prop on `PluginContextProviderProps` component for plugin which is used to display the reference documentation when selecting a type.
+
+- Updated dependencies [[`98d13a3`](https://github.com/graphql/graphiql/commit/98d13a3e515eb70aaf5a5ba669c680d5959fef67)]:
+  - @graphiql/plugin-doc-explorer@0.0.1
+  - @graphiql/react@0.32.0
+  - @graphiql/plugin-history@0.0.2
+
+## 4.0.1
+
+### Patch Changes
+
+- [#3911](https://github.com/graphql/graphiql/pull/3911) [`e7c436b`](https://github.com/graphql/graphiql/commit/e7c436b329a68981bdbd2b662be94875a546a1d6) Thanks [@dimaMachina](https://github.com/dimaMachina)! - - export `cn` from `@graphiql/react`
+
+  - remove following exports from `@graphiql/react` and move them in `@graphiql/plugin-history` package:
+    - `History`
+    - `HistoryContext`
+    - `HistoryContextType`
+    - `HistoryContextProvider`
+    - `useHistoryContext`
+    - `HISTORY_PLUGIN`
+  - remove types from `@graphiql/react` (use `ComponentProps<typeof MyContextProviderProps>` instead):
+    - `HistoryContextProviderProps`
+    - `ExecutionContextProviderProps`
+    - `EditorContextProviderProps`
+    - `ExplorerContextProviderProps`
+    - `PluginContextProviderProps`
+    - `SchemaContextProviderProps`
+    - `StorageContextProviderProps`
+    - `GraphiQLProviderProps`
+
+- [#3915](https://github.com/graphql/graphiql/pull/3915) [`bc31cd9`](https://github.com/graphql/graphiql/commit/bc31cd99a92693238e7359456e3cc22ed0387df0) Thanks [@dimaMachina](https://github.com/dimaMachina)! - fix unpkg.com results to `Not found` when `main` field isn't specified in `package.json`
+
+- Updated dependencies [[`e7c436b`](https://github.com/graphql/graphiql/commit/e7c436b329a68981bdbd2b662be94875a546a1d6)]:
+  - @graphiql/plugin-history@0.0.1
+  - @graphiql/react@0.31.0
+
+## 4.0.0
+
+### Major Changes
+
+- [#3904](https://github.com/graphql/graphiql/pull/3904) [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602) Thanks [@dimaMachina](https://github.com/dimaMachina)! - drop commonjs build files
+
+- [#3904](https://github.com/graphql/graphiql/pull/3904) [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602) Thanks [@dimaMachina](https://github.com/dimaMachina)! - show tabs even there is only 1 tab
+
+- [#3904](https://github.com/graphql/graphiql/pull/3904) [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602) Thanks [@dimaMachina](https://github.com/dimaMachina)! - remove default export
+
+  ## Migration
+
+  ### Before
+
+  ```jsx
+  import GraphiQL from 'graphiql';
+  ```
+
+  ### After
+
+  ```jsx
+  import { GraphiQL } from 'graphiql';
+  ```
+
+- [#3904](https://github.com/graphql/graphiql/pull/3904) [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602) Thanks [@dimaMachina](https://github.com/dimaMachina)! - - support react 19, drop support react 16 and react 17
+
+  - replace deprecated `ReactDOM.unmountComponentAtNode()` and `ReactDOM.render()` with `root.unmount()` and `createRoot(container).render()`
+  - update `@radix-ui` and `@headlessui/react` dependencies
+
+- [#3904](https://github.com/graphql/graphiql/pull/3904) [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602) Thanks [@dimaMachina](https://github.com/dimaMachina)! - remove `disableTabs` option
+
+- [#3904](https://github.com/graphql/graphiql/pull/3904) [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602) Thanks [@dimaMachina](https://github.com/dimaMachina)! - remove `data-testid="graphiql-container"`
+
+- [#3904](https://github.com/graphql/graphiql/pull/3904) [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602) Thanks [@dimaMachina](https://github.com/dimaMachina)! - changed exports
+
+  ```diff
+  -graphiql/graphiql.css
+  +graphiql/style.css
+  ```
+
+  changed cdn paths, `dist/index.umd.js` and `dist/style.css` are minified
+
+  ```diff
+  -https://unpkg.com/graphiql/graphiql.js
+  -https://unpkg.com/graphiql/graphiql.min.js
+  +https://unpkg.com/graphiql/dist/index.umd.js
+  -https://unpkg.com/graphiql/graphiql.css
+  -https://unpkg.com/graphiql/graphiql.min.css
+  +https://unpkg.com/graphiql/dist/style.css
+  ```
+
+- [#3904](https://github.com/graphql/graphiql/pull/3904) [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602) Thanks [@dimaMachina](https://github.com/dimaMachina)! - - new looks of tabs
+
+  - fix `disableTabs` when `Add tab` button is still shown
+
+- [#3904](https://github.com/graphql/graphiql/pull/3904) [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602) Thanks [@dimaMachina](https://github.com/dimaMachina)! - Remove `toolbar.additionalContent` and `toolbar.additionalComponent` props in favor of `GraphiQL.Toolbar` render props.
+
+  ## Migration from `toolbar.additionalContent`
+
+  ### Before
+
+  ```jsx
+  <GraphiQL toolbar={{ additionalContent: <button>My button</button> }} />
+  ```
+
+  ### After
+
+  ```jsx
+  <GraphiQL>
+    <GraphiQL.Toolbar>
+      {({ merge, prettify, copy }) => (
+        <>
+          {prettify}
+          {merge}
+          {copy}
+          <button>My button</button>
+        </>
+      )}
+    </GraphiQL.Toolbar>
+  </GraphiQL>
+  ```
+
+  ## Migration from `toolbar.additionalComponent`
+
+  ### Before
+
+  ```jsx
+  <GraphiQL
+    toolbar={{
+      additionalComponent: function MyComponentWithAccessToContext() {
+        return <button>My button</button>;
+      },
+    }}
+  />
+  ```
+
+  ### After
+
+  ```jsx
+  <GraphiQL>
+    <GraphiQL.Toolbar>
+      {({ merge, prettify, copy }) => (
+        <>
+          {prettify}
+          {merge}
+          {copy}
+          <MyComponentWithAccessToContext />
+        </>
+      )}
+    </GraphiQL.Toolbar>
+  </GraphiQL>
+  ```
+
+  ***
+
+  Additionally, you can sort default toolbar buttons in different order or remove unneeded buttons for you:
+
+  ```jsx
+  <GraphiQL>
+    <GraphiQL.Toolbar>
+      {({ prettify, copy }) => (
+        <>
+          {copy /* Copy button will be first instead of default last */}
+          {/* Merge button is removed from toolbar */}
+          {prettify}
+        </>
+      )}
+    </GraphiQL.Toolbar>
+  </GraphiQL>
+  ```
+
+### Minor Changes
+
+- [#3904](https://github.com/graphql/graphiql/pull/3904) [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602) Thanks [@dimaMachina](https://github.com/dimaMachina)! - Add support for `onPrettifyQuery` callback to enable customised query formatting
+
+- [#3904](https://github.com/graphql/graphiql/pull/3904) [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602) Thanks [@dimaMachina](https://github.com/dimaMachina)! - Update GraphiQL CDN example using ESM-based CDN esm.sh
+
+- [#3904](https://github.com/graphql/graphiql/pull/3904) [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602) Thanks [@dimaMachina](https://github.com/dimaMachina)! - update `vite` and related dependencies
+
+- [#3904](https://github.com/graphql/graphiql/pull/3904) [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602) Thanks [@dimaMachina](https://github.com/dimaMachina)! - remove `.graphiql-session` class
+
+### Patch Changes
+
+- [#3904](https://github.com/graphql/graphiql/pull/3904) [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602) Thanks [@dimaMachina](https://github.com/dimaMachina)! - update graphql to `16.9.0` and use vite `define` configuration to remove development code from cdn bundle
+
+- [#3904](https://github.com/graphql/graphiql/pull/3904) [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602) Thanks [@dimaMachina](https://github.com/dimaMachina)! - Respect Markdown format: ignore single newline
+
+- [#3904](https://github.com/graphql/graphiql/pull/3904) [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602) Thanks [@dimaMachina](https://github.com/dimaMachina)! - use `position: absolute` for `.graphiql-logo` class
+
+- [#3904](https://github.com/graphql/graphiql/pull/3904) [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602) Thanks [@dimaMachina](https://github.com/dimaMachina)! - replace `overflow-y: scroll` with `overflow-y: auto`
+
+- [#3904](https://github.com/graphql/graphiql/pull/3904) [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602) Thanks [@dimaMachina](https://github.com/dimaMachina)! - rollback `position: absolute` style for `.graphiql-logo` because tabs will behind logo
+
+- [#3904](https://github.com/graphql/graphiql/pull/3904) [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602) Thanks [@dimaMachina](https://github.com/dimaMachina)! - - prefer `location` over `window.location`
+
+  - prefer `navigator` over `window.navigator`
+
+- [#3904](https://github.com/graphql/graphiql/pull/3904) [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602) Thanks [@dimaMachina](https://github.com/dimaMachina)! - use `right: var(--px-16)` instead of `right: 0` for `.graphiql-logo`
+
+- [#3904](https://github.com/graphql/graphiql/pull/3904) [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602) Thanks [@dimaMachina](https://github.com/dimaMachina)! - replace `Tooltip`s in tabs with html `title="..."` attribute
+
+- Updated dependencies [[`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602), [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602), [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602), [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602), [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602), [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602), [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602), [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602), [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602), [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602), [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602), [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602), [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602), [`d1395f9`](https://github.com/graphql/graphiql/commit/d1395f987b3f9c70b69ec5ad7283c63594dd7602)]:
+  - @graphiql/react@0.30.0
+
+## 4.0.0-alpha.5
+
+### Minor Changes
+
+- [#3733](https://github.com/graphql/graphiql/pull/3733) [`8dbddb5`](https://github.com/graphql/graphiql/commit/8dbddb50273720d76f895af6b783b04204c68e03) Thanks [@dimaMachina](https://github.com/dimaMachina)! - Add support for `onPrettifyQuery` callback to enable customised query formatting
+
+### Patch Changes
+
+- Updated dependencies [[`8dbddb5`](https://github.com/graphql/graphiql/commit/8dbddb50273720d76f895af6b783b04204c68e03)]:
+  - @graphiql/react@1.0.0-alpha.4
+
+## 4.0.0-alpha.4
+
+### Minor Changes
+
+- [#3728](https://github.com/graphql/graphiql/pull/3728) [`a1a5208`](https://github.com/graphql/graphiql/commit/a1a5208aeebe4ff622e83cd355f8b4e9b7fa011c) Thanks [@dimaMachina](https://github.com/dimaMachina)! - remove `.graphiql-session` class
+
+### Patch Changes
+
+- [#3414](https://github.com/graphql/graphiql/pull/3414) [`f8b719f`](https://github.com/graphql/graphiql/commit/f8b719f215a79038d1b2a54ddfef461fd849a912) Thanks [@leonardehrenfried](https://github.com/leonardehrenfried)! - Respect Markdown format: ignore single newline
+
+- [#3730](https://github.com/graphql/graphiql/pull/3730) [`360a038`](https://github.com/graphql/graphiql/commit/360a0385d4ef0105beb8e76044a78f5cd43c9448) Thanks [@dimaMachina](https://github.com/dimaMachina)! - rollback `position: absolute` style for `.graphiql-logo` because tabs will behind logo
+
+- [#3726](https://github.com/graphql/graphiql/pull/3726) [`196e9a0`](https://github.com/graphql/graphiql/commit/196e9a081ffc0df16a5537c8ec0fb622fc3ba0b0) Thanks [@dimaMachina](https://github.com/dimaMachina)! - use `right: var(--px-16)` instead of `right: 0` for `.graphiql-logo`
+
+- Updated dependencies [[`f8b719f`](https://github.com/graphql/graphiql/commit/f8b719f215a79038d1b2a54ddfef461fd849a912), [`360a038`](https://github.com/graphql/graphiql/commit/360a0385d4ef0105beb8e76044a78f5cd43c9448)]:
+  - @graphiql/react@1.0.0-alpha.3
+
+## 4.0.0-alpha.3
+
+### Patch Changes
+
+- [#3720](https://github.com/graphql/graphiql/pull/3720) [`79f3abf`](https://github.com/graphql/graphiql/commit/79f3abf9b697c448442e32eb5a21b7ff720bc242) Thanks [@dimaMachina](https://github.com/dimaMachina)! - replace `overflow-y: scroll` with `overflow-y: auto`
+
+- [#3720](https://github.com/graphql/graphiql/pull/3720) [`79f3abf`](https://github.com/graphql/graphiql/commit/79f3abf9b697c448442e32eb5a21b7ff720bc242) Thanks [@dimaMachina](https://github.com/dimaMachina)! - replace `Tooltip`s in tabs with html `title="..."` attribute
+
+- Updated dependencies [[`79f3abf`](https://github.com/graphql/graphiql/commit/79f3abf9b697c448442e32eb5a21b7ff720bc242)]:
+  - @graphiql/react@1.0.0-alpha.2
+
+## 4.0.0-alpha.2
+
+### Patch Changes
+
+- [#3716](https://github.com/graphql/graphiql/pull/3716) [`cc2808f`](https://github.com/graphql/graphiql/commit/cc2808f9b0d9ac0f98603299ec67e2a659cbfcd7) Thanks [@dimaMachina](https://github.com/dimaMachina)! - use `position: absolute` for `.graphiql-logo` class
+
+- Updated dependencies [[`bf0c4e7`](https://github.com/graphql/graphiql/commit/bf0c4e7236f4a68448063aa0c6a4ed439e869a9f)]:
+  - @graphiql/react@1.0.0-alpha.1
+
+## 4.0.0-alpha.1
+
+### Major Changes
+
+- [#3713](https://github.com/graphql/graphiql/pull/3713) [`27bbc51`](https://github.com/graphql/graphiql/commit/27bbc51a69504ffa9c6efbb17f112668f38fe52d) Thanks [@dimaMachina](https://github.com/dimaMachina)! - show tabs even there is only 1 tab
+
+- [#3707](https://github.com/graphql/graphiql/pull/3707) [`3c901c1`](https://github.com/graphql/graphiql/commit/3c901c104123750f45bcd64ade5b0ab9706d3146) Thanks [@dimaMachina](https://github.com/dimaMachina)! - Remove `toolbar.additionalContent` and `toolbar.additionalComponent` props in favor of `GraphiQL.Toolbar` render props.
+
+  ## Migration from `toolbar.additionalContent`
+
+  #### Before
+
+  ```jsx
+  <GraphiQL toolbar={{ additionalContent: <button>My button</button> }} />
+  ```
+
+  #### After
+
+  ```jsx
+  <GraphiQL>
+    <GraphiQL.Toolbar>
+      {({ merge, prettify, copy }) => (
+        <>
+          {prettify}
+          {merge}
+          {copy}
+          <button>My button</button>
+        </>
+      )}
+    </GraphiQL.Toolbar>
+  </GraphiQL>
+  ```
+
+  ### Migration from `toolbar.additionalComponent`
+
+  #### Before
+
+  ```jsx
+  <GraphiQL
+    toolbar={{
+      additionalComponent: function MyComponentWithAccessToContext() {
+        return <button>My button</button>;
+      },
+    }}
+  />
+  ```
+
+  #### After
+
+  ```jsx
+  <GraphiQL>
+    <GraphiQL.Toolbar>
+      {({ merge, prettify, copy }) => (
+        <>
+          {prettify}
+          {merge}
+          {copy}
+          <MyComponentWithAccessToContext />
+        </>
+      )}
+    </GraphiQL.Toolbar>
+  </GraphiQL>
+  ```
+
+  ***
+
+  Additionally, you can sort default toolbar buttons in different order or remove unneeded buttons for you:
+
+  ```jsx
+  <GraphiQL>
+    <GraphiQL.Toolbar>
+      {({ prettify, copy }) => (
+        <>
+          {copy /* Copy button will be first instead of default last */}
+          {/* Merge button is removed from toolbar */}
+          {prettify}
+        </>
+      )}
+    </GraphiQL.Toolbar>
+  </GraphiQL>
+  ```
+
+## 4.0.0-alpha.0
+
+### Major Changes
+
+- [#3706](https://github.com/graphql/graphiql/pull/3706) [`343dd59`](https://github.com/graphql/graphiql/commit/343dd599ee10b0670cd7ab4dfaa65344f0d48c84) Thanks [@dimaMachina](https://github.com/dimaMachina)! - remove default export
+
+  ## Migration
+
+  ### Before
+
+  ```jsx
+  import GraphiQL from 'graphiql';
+  ```
+
+  ### After
+
+  ```jsx
+  import { GraphiQL } from 'graphiql';
+  ```
+
+- [#3687](https://github.com/graphql/graphiql/pull/3687) [`09e7004`](https://github.com/graphql/graphiql/commit/09e700403beb6c7290d165df33a2455ac2196971) Thanks [@dimaMachina](https://github.com/dimaMachina)! - remove `disableTabs` option
+
+- [#3688](https://github.com/graphql/graphiql/pull/3688) [`0fdd9b9`](https://github.com/graphql/graphiql/commit/0fdd9b9f32513d96281f577a5d9bd2fefb5f05d4) Thanks [@dimaMachina](https://github.com/dimaMachina)! - remove `data-testid="graphiql-container"`
+
+- [#3679](https://github.com/graphql/graphiql/pull/3679) [`5d90e0e`](https://github.com/graphql/graphiql/commit/5d90e0eed58214c5926e6e0edb196971b15b1121) Thanks [@dimaMachina](https://github.com/dimaMachina)! - migrate from `webpack` to `vite`
+
+  changed exports
+
+  ```diff
+  -graphiql/graphiql.css
+  +graphiql/style.css
+  ```
+
+  changed cdn paths, `dist/index.umd.js` and `dist/style.css` are minified
+
+  ```diff
+  -https://unpkg.com/graphiql/graphiql.js
+  -https://unpkg.com/graphiql/graphiql.min.js
+  +https://unpkg.com/graphiql/dist/index.umd.js
+  -https://unpkg.com/graphiql/graphiql.css
+  -https://unpkg.com/graphiql/graphiql.min.css
+  +https://unpkg.com/graphiql/dist/style.css
+  ```
+
+- [#3644](https://github.com/graphql/graphiql/pull/3644) [`3c1a345`](https://github.com/graphql/graphiql/commit/3c1a345acd9bf07b45bc230009cb57c51c425673) Thanks [@dimaMachina](https://github.com/dimaMachina)! - - new looks of tabs
+
+  - fix `disableTabs` when `Add tab` button is still shown
+
+### Patch Changes
+
+- [#3683](https://github.com/graphql/graphiql/pull/3683) [`8efb873`](https://github.com/graphql/graphiql/commit/8efb873458489ce3497d917bcafd4ad8dfcbe6c8) Thanks [@dimaMachina](https://github.com/dimaMachina)! - update graphql to `16.9.0` and use vite `define` configuration to remove development code from cdn bundle
+
+- [#3692](https://github.com/graphql/graphiql/pull/3692) [`82bc961`](https://github.com/graphql/graphiql/commit/82bc961a33c4e9da29dffb4a603035a4909f49ad) Thanks [@dimaMachina](https://github.com/dimaMachina)! - - prefer `location` over `window.location`
+  - prefer `navigator` over `window.navigator`
+- Updated dependencies [[`00415d2`](https://github.com/graphql/graphiql/commit/00415d2940c4d76a4a9e683e9fa0504ba97dd627), [`9baf1f0`](https://github.com/graphql/graphiql/commit/9baf1f0fc9f32404fbb8bf57b3d1c2c2c8778ddb), [`8ff87d7`](https://github.com/graphql/graphiql/commit/8ff87d7b6b3d5d12b539612a39ca3abf7e631106), [`82bc961`](https://github.com/graphql/graphiql/commit/82bc961a33c4e9da29dffb4a603035a4909f49ad), [`3c1a345`](https://github.com/graphql/graphiql/commit/3c1a345acd9bf07b45bc230009cb57c51c425673)]:
+  - @graphiql/react@1.0.0-alpha.0
+
+## 3.9.0
+
+### Minor Changes
+
+- [#3826](https://github.com/graphql/graphiql/pull/3826) [`cb29e9f`](https://github.com/graphql/graphiql/commit/cb29e9fbe1362778bc327513fc884c4ec419775e) Thanks [@dimaMachina](https://github.com/dimaMachina)! - - remove react compiler custom patch
+
+  - update `react-compiler-runtime` to use `19.1.0-rc.1` version
+
+- [#3826](https://github.com/graphql/graphiql/pull/3826) [`cb29e9f`](https://github.com/graphql/graphiql/commit/cb29e9fbe1362778bc327513fc884c4ec419775e) Thanks [@dimaMachina](https://github.com/dimaMachina)! - migrate `graphiql` to `vite` and `react compiler`
+
+### Patch Changes
+
+- Updated dependencies [[`cb29e9f`](https://github.com/graphql/graphiql/commit/cb29e9fbe1362778bc327513fc884c4ec419775e), [`1adc40c`](https://github.com/graphql/graphiql/commit/1adc40cc56dbf79296bb857156e6adce1c44dcbe)]:
+  - @graphiql/react@0.29.0
+
 ## 3.8.3
 
 ### Patch Changes
@@ -324,7 +771,7 @@
 
 ### Patch Changes
 
-- [#3124](https://github.com/graphql/graphiql/pull/3124) [`c645932c`](https://github.com/graphql/graphiql/commit/c645932c7973e11ad917e1d1d897fd409f8c042f) Thanks [@B2o5T](https://github.com/B2o5T)! - avoid unecessary renders by using useMemo or useCallback
+- [#3124](https://github.com/graphql/graphiql/pull/3124) [`c645932c`](https://github.com/graphql/graphiql/commit/c645932c7973e11ad917e1d1d897fd409f8c042f) Thanks [@B2o5T](https://github.com/B2o5T)! - avoid unnecessary renders by using useMemo or useCallback
 
 - Updated dependencies [[`911cf3e0`](https://github.com/graphql/graphiql/commit/911cf3e0b0fa13268245463c8db8299279e5c461), [`c645932c`](https://github.com/graphql/graphiql/commit/c645932c7973e11ad917e1d1d897fd409f8c042f), [`2ca4841b`](https://github.com/graphql/graphiql/commit/2ca4841baf74e87a3f067b3415f8da3347ee3898), [`7bf90929`](https://github.com/graphql/graphiql/commit/7bf90929f62ba812c0946e0424f9f843f7b6b0ff), [`431b7fe1`](https://github.com/graphql/graphiql/commit/431b7fe1efefa4867f0ea617adc436b1117052e8)]:
   - @graphiql/react@0.17.6

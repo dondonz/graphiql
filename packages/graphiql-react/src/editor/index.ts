@@ -1,5 +1,3 @@
-'use no memo';
-
 export {
   HeaderEditor,
   ImagePreview,
@@ -31,7 +29,7 @@ export { useResponseEditor } from './response-editor';
 export { useVariableEditor } from './variable-editor';
 export { useExtensionsEditor } from './extensions-editor';
 
-export type { EditorContextType, EditorContextProviderProps } from './context';
+export type { EditorContextType } from './context';
 export type { UseHeaderEditorArgs } from './header-editor';
 export type { UseQueryEditorArgs } from './query-editor';
 export type {

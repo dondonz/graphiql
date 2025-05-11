@@ -1,15 +1,15 @@
 {
   "name": "graphql-language-service-server",
-  "version": "2.14.2",
+  "version": "2.14.5",
   "description": "Server process backing the GraphQL Language Service",
   "contributors": [
-    "Greg Hurrell <greg@hurrell.net> (https://greg.hurrell.net/)",
+    "Greg Hurrell <greg@hurrell.net> (https://greg.hurrell.net)",
     "Hyohyeon Jeong <asiandrummer@fb.com>",
-    "Lee Byron <lee@leebyron.com> (http://leebyron.com/)"
+    "Lee Byron <lee@leebyron.com> (https://leebyron.com)"
   ],
   "repository": {
     "type": "git",
-    "url": "http://github.com/graphql/graphiql",
+    "url": "https://github.com/graphql/graphiql",
     "directory": "packages/graphql-language-service-server"
   },
   "homepage": "https://github.com/graphql/graphiql/tree/main/packages/graphql-language-service-server#readme",
@@ -47,7 +47,7 @@
     "fast-glob": "^3.2.7",
     "glob": "^7.2.0",
     "graphql-config": "5.0.3",
-    "graphql-language-service": "^5.3.0",
+    "graphql-language-service": "^5.3.1",
     "lru-cache": "^10.2.0",
     "mkdirp": "^1.0.4",
     "node-abort-controller": "^3.0.1",
